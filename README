@@ -1,0 +1,15 @@
+pycoreutils
+Python re-implementation of GNU coreutils
+
+WHY?
+Why not?  Could be useful to someone.  Maybe the PyOS project.
+
+DEVELOPMENT
+Put the drivers for the commands in src/.  These should contain a main()
+function and do the argument processing.  Put the core functionality for
+the program in a pycoreutils module and import it in the driver.
+
+To test drivers, make sure you set a PYTHONPATH environment variable so
+that python can find the pycoreutils modules in this directory:
+
+   export PYTHONPATH=$(pwd)
