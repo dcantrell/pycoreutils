@@ -1,6 +1,6 @@
 /*
  * pysync.c - sync(1) core functionality
- * Copyright (C) 2007  David Cantrell <david.l.cantrell@gmail.com>
+ * Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
