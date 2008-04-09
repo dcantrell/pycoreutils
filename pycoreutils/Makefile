@@ -12,7 +12,7 @@ CC     ?= gcc
 CFLAGS += -I$(PYTHONINCLUDE)
 
 # Modules to build
-PYMODULES = pyhostid.so pysync.so
+PYMODULES = pycoreutilsmodule.c
 
 all: $(PYMODULES)
 

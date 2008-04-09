@@ -1,5 +1,6 @@
 /*
- * pysync.c - sync(1) core functionality
+ * pycoreutilsmodule.c - Functionality that we cannot implement directly
+ *                       in Python.
  * Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -20,20 +21,33 @@
 #include <Python.h>
 #include <unistd.h>
 
-static PyObject *dopysync(PyObject *self, PyObject *args) {
+static PyObject *hostid(PyObject *self, PyObject *args) {
+	unsigned int id;
+	char ret[9];
+
+	id = gethostid();
+	id &= 0xffffffff;
+	if (sprintf(ret, "%08x", id) < 0)
+		return NULL;
+
+	return Py_BuildValue("s", ret);
+}
+
+static PyObject *sync(PyObject *self, PyObject *args) {
 	sync();
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
-static PyMethodDef pysyncMethods[] = {
-	{ "pysync", (PyCFunction) dopysync, METH_VARARGS, NULL },
+static PyMethodDef pycoreutilsMethods[] = {
+	{ "hostid", (PyCFunction) hostid, METH_VARARGS, NULL },
+	{ "sync", (PyCFunction) sync, METH_VARARGS, NULL },
 	{ NULL, NULL, 0, NULL }
 };
 
-void initpysync(void) {
+void initpycoreutils(void) {
 	PyObject *m, *d;
 
-	m = Py_InitModule("pysync", pysyncMethods);
+	m = Py_InitModule("pycoreutils", pycoreutilsMethods);
 	d = PyModule_GetDict(m);
 }
