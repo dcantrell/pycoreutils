@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 #
-# pycksum.py - cksum(1) core functionality
-# Copyright (C) 2007  David Hilley <davidhi@cc.gatech.edu>
+# cksum.py - cksum(1) command written in Python
+# Copyright (C) 2007, 2008  David Hilley <davidhi@cc.gatech.edu>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,7 +18,11 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-import os, sys
+ver = (2, 0)
+
+import getopt
+import os
+import sys
 
 # This lookup table and the basic CRC algorithm are from the GNU cksum
 # implementation
@@ -74,6 +79,13 @@ crcbytetable = [0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9, 0x130476dc,
 		0xa6322bdf, 0xa2f33668, 0xbcb4666d, 0xb8757bda, 0xb5365d03,
 		0xb1f740b4]
 
+def usage(cmd):
+	print "Usage: %s [FILE]..." % (cmd,)
+	print "   or: %s [OPTION]" % (cmd,)
+	print "Print CRC checksum and byte counts of each FILE.\n"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit"
+
 def posixcrc(f):
 	t, bytes = 0, 0
 	fd = f.fileno()
@@ -99,7 +111,6 @@ def posixcrc(f):
 	t = ~t & 0xFFFFFFFF
 	return (t, bytes)
 
-
 def fileopen(fname):
 	if fname == "" or fname == "-":
 		return sys.stdin
@@ -110,9 +121,8 @@ def fileopen(fname):
 		sys.stderr.write("cksum: %s: %s\n" % (fname,
 						      ioe.strerror))
 		return None
-	
 
-def pycksum(fnames):
+def xcksum(fnames):
 	if not fnames:
 		fnames = [""]
 
@@ -123,3 +133,34 @@ def pycksum(fnames):
 			print crc, bytes, fname
 
 	return 0
+
+def main():
+	prog = os.path.basename(sys.argv[0])
+	help, version = False, False
+
+	opts, args = [], []
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "",
+		                           ["help", "version"])
+	except getopt.GetoptError:
+		help = True
+		
+	for o, a in opts:
+		if o in ("--help"):
+			help = True
+		if o in ("--version"):
+			version = True
+
+	if help:
+		usage(prog)
+		sys.exit(0)
+	elif version:
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
+	else:
+		t = xcksum(args)
+		sys.exit(t)
+
+if __name__ == "__main__":
+	main()
