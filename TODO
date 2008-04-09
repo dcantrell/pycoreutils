@@ -1,80 +1,88 @@
-/bin/cat
-/bin/chgrp
-/bin/chmod
-/bin/chown
-/bin/cp
-/bin/cut
-/bin/date
-/bin/dd
-/bin/df
-/bin/echo
-/bin/env
-/bin/link
-/bin/ln
-/bin/ls
-/bin/mknod
-/bin/mv
-/bin/nice
-/bin/rm
-/bin/rmdir
-/bin/sort
-/bin/stty
-/bin/su
-/bin/touch
-/bin/unlink
-/sbin/runuser
-/usr/bin/[
-/usr/bin/base64
-/usr/bin/chcon
-/usr/bin/comm
-/usr/bin/csplit
-/usr/bin/cut
-/usr/bin/dir
-/usr/bin/dircolors
-/usr/bin/du
-/usr/bin/env
-/usr/bin/expand
-/usr/bin/expr
-/usr/bin/factor
-/usr/bin/fmt
-/usr/bin/fold
-/usr/bin/groups
-/usr/bin/head
-/usr/bin/id
-/usr/bin/install
-/usr/bin/join
-/usr/bin/md5sum
-/usr/bin/mkfifo
-/usr/bin/nl
-/usr/bin/nohup
-/usr/bin/od
-/usr/bin/paste
-/usr/bin/pathchk
-/usr/bin/pinky
-/usr/bin/pr
-/usr/bin/printf
-/usr/bin/ptx
-/usr/bin/readlink
-/usr/bin/runcon
-/usr/bin/seq
-/usr/bin/sha1sum
-/usr/bin/sha224sum
-/usr/bin/sha256sum
-/usr/bin/sha384sum
-/usr/bin/sha512sum
-/usr/bin/shred
-/usr/bin/split
-/usr/bin/stat
-/usr/bin/sum
-/usr/bin/tac
-/usr/bin/tail
-/usr/bin/test
-/usr/bin/tr
-/usr/bin/tsort
-/usr/bin/unexpand
-/usr/bin/uniq
-/usr/bin/users
-/usr/bin/vdir
-/usr/bin/wc
-/usr/bin/who
-/usr/sbin/chroot
+* All of these commands:
+    /bin/cat
+    /bin/chgrp
+    /bin/chmod
+    /bin/chown
+    /bin/cp
+    /bin/cut
+    /bin/date
+    /bin/dd
+    /bin/df
+    /bin/echo
+    /bin/env
+    /bin/link
+    /bin/ln
+    /bin/ls
+    /bin/mknod
+    /bin/mv
+    /bin/nice
+    /bin/rm
+    /bin/rmdir
+    /bin/sort
+    /bin/stty
+    /bin/su
+    /bin/touch
+    /bin/unlink
+    /sbin/runuser
+    /usr/bin/[
+    /usr/bin/base64
+    /usr/bin/chcon
+    /usr/bin/comm
+    /usr/bin/csplit
+    /usr/bin/cut
+    /usr/bin/dir
+    /usr/bin/dircolors
+    /usr/bin/du
+    /usr/bin/env
+    /usr/bin/expand
+    /usr/bin/expr
+    /usr/bin/factor
+    /usr/bin/fmt
+    /usr/bin/fold
+    /usr/bin/groups
+    /usr/bin/head
+    /usr/bin/id
+    /usr/bin/install
+    /usr/bin/join
+    /usr/bin/md5sum
+    /usr/bin/mkfifo
+    /usr/bin/nl
+    /usr/bin/nohup
+    /usr/bin/od
+    /usr/bin/paste
+    /usr/bin/pathchk
+    /usr/bin/pinky
+    /usr/bin/pr
+    /usr/bin/printf
+    /usr/bin/ptx
+    /usr/bin/readlink
+    /usr/bin/runcon
+    /usr/bin/seq
+    /usr/bin/sha1sum
+    /usr/bin/sha224sum
+    /usr/bin/sha256sum
+    /usr/bin/sha384sum
+    /usr/bin/sha512sum
+    /usr/bin/shred
+    /usr/bin/split
+    /usr/bin/stat
+    /usr/bin/sum
+    /usr/bin/tac
+    /usr/bin/tail
+    /usr/bin/test
+    /usr/bin/tr
+    /usr/bin/tsort
+    /usr/bin/unexpand
+    /usr/bin/uniq
+    /usr/bin/users
+    /usr/bin/vdir
+    /usr/bin/wc
+    /usr/bin/who
+    /usr/sbin/chroot
+
+* Move command usage stuff out of pycoreutils/usage.py and in to individual
+  driver files.
+
+* Support "flat" build model where you can build a command and incorporate
+  everything from pycoreutils that you need in a single file.  A little more
+  portable for some systems.
