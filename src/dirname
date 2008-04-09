@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # dirname.py - dirname(1) command written in Python
-# Copyright (C) 2007  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,15 +18,24 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-pydirnamever = (1, 0)
+ver = (2, 0)
 
+import os
 import sys
-from pycoreutils.common import *
-from pycoreutils.pydirname import pydirname
-from pycoreutils.pybasename import pybasename
+
+def usage(cmd):
+	print "Usage: %s NAME" % (cmd,)
+	print "   or: %s OPTION" % (cmd,)
+	print "Print NAME with its trailing /component removed; if NAME contains no /'s,"
+	print "output `.' (meaning the current directory).\n"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit\n"
+	print "Examples:"
+	print "  %s /usr/bin/sort  Output \"/usr/bin\"." % (cmd,)
+	print "  %s stdio.h        Output \".\"." % (cmd,)
 
 def main():
-	prog = pybasename(sys.argv[0])
+	prog = os.path.basename(sys.argv[0])
 
 	if len(sys.argv) == 1:
 		print "%s: missing operand" % (prog,)
@@ -39,17 +48,16 @@ def main():
 		sys.exit(1)
 
 	if sys.argv[1] == "--help":
-		try:
-			from pycoreutils.usage import pydirname_usage
-			pydirname_usage(prog)
-		except:
-			print "Help screen is not available."
-
+		usage(prog)
 		sys.exit(0)
 	elif sys.argv[1] == "--version":
-		showversion(prog, pydirnamever)
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
 	else:
-		print pydirname(sys.argv[1])
+		ret = os.path.dirname(sys.arg[1])
+		if ret == '':
+			ret = '.'
+		print ret
 		sys.exit(0)
 
 if __name__ == "__main__":
