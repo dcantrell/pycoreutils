@@ -1,8 +1,6 @@
 src/
-   These scripts are the driver scripts.  The ones that replace the /bin
-   and /usr/bin commands in GNU coreutils.  The driver script handles
-   parsing command line arguments and calling the core functionality
-   function in the pycoreutils module.  See the other scripts for examples.
+   These programs are the commands.  The ones that replace the /bin and
+   /usr/bin commands in GNU coreutils.
 
    The driver should contain a pyCMDver tuple with the major and minor
    version number.  The version is unique to the command.
@@ -12,22 +10,9 @@ src/
    if __name__ == "__main__" block.
 
 pycoreutils/
-   Core functionality module.  Common functions that are used by multiple
-   commands should be placed in the __init__.py script.
-
-   Each command has a core functionality function called pyCMD() that
-   returns whatever the command returns in GNU coreutils.  This is easy
-   to figure out for some (whoami, groups, uname, and so on) and more
-   challenging for others (ls, among others).  The point is that the
-   core functionality function can be used programatically as well as
-   from the driver script.
-
-   The --help screens are all contained in usage.py, so put yours here.
-   The main idea here is that if a user wants to save precious kilobytes
-   on the target system, you can remove all the help screens by deleting
-   the usage.py file.  The --help screens are displayed in a try/except
-   block and in the event that usage.py does not exist, the command will
-   display "Help not available."
+   Supplementary module.  Some things have to be implementation as Python
+   extension modules in C, so we do that here and then import them in to
+   the frontend command in src/
 
 Style
    Please follow the same style that has been followed for the other
