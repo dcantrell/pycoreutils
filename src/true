@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
-# false.py - false(1) command written in Python
-# Copyright (C) 2007  David Cantrell <david.l.cantrell@gmail.com>
+# true.py - true(1) command written in Python
+# Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,12 +18,12 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-pyfalsever = (1, 0)
+pytruever = (2, 0)
 
 import sys
 
 def main():
-	sys.exit(not False)
+	sys.exit(not True)
 
 if __name__ == "__main__":
 	main()
