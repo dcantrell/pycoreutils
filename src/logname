@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # logname.py - logname(1) command written in Python
-# Copyright (C) 2007  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,30 +18,31 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-pylognamever = (1, 0)
+ver = (2, 0)
 
+import os
+import posix
 import sys
-from pycoreutils.common import *
-from pycoreutils.pylogname import pylogname
-from pycoreutils.pybasename import pybasename
+
+def usage(cmd):
+	print "Usage: %s [OPTION]..." % (cmd,)
+	print "Print the name of the current user.\n"
+	print "     --help      display this help and exit"
+	print "     --version   output version information and exit"
 
 def main():
-	prog = pybasename(sys.argv[0])
+	prog = os.path.basename(sys.argv[0])
 
 	if len(sys.argv) == 1:
-		print pylogname()
+		print posix.getlogin()
 		sys.exit(0)
 
 	if sys.argv[1] == "--help":
-		try:
-			from pycoreutils.usage import pylogname_usage
-			pylogname_usage(prog)
-		except:
-			print "Help screen is not available."
-
+		usage(prog)
 		sys.exit(0)
 	elif sys.argv[1] == "--version":
-		showversion(prog, pylognamever)
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
 	else:
 		print "%s: extra operand `%s'" % (prog, sys.argv[1],)
 		print "Try `%s --help' for more information." % (prog,)

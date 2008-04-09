@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # pyprintenv.py - pyprintenv(1) command written in Python
-# Copyright (C) 2007  Chris Lumens <clumens@redhat.com>
+# Copyright (C) 2007, 2008  Chris Lumens <clumens@redhat.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,33 +18,51 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-pyprintenvver = (1, 0)
+ver = (2, 0)
 
+import os
 import sys
-from pycoreutils.common import *
-from pycoreutils.pyprintenv import pyprintenv
-from pycoreutils.pybasename import pybasename
+
+def usage(cmd):
+	print "Usage: %s [VARIABLE]..." % (cmd,)
+	print "   or: %s OPTION" % (cmd,)
+	print "If no environment VARIABLE specified, print them all.\n"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit\n"
+	print "NOTE: your shell may have its own version of printenv, which usually supercedes"
+	print "the version described here.  Please refer to your shell's documentation"
+	print "for details about the options it supports."
+
+def xprintenv(var=None):
+	if var:
+		if os.environ.has_key(var):
+			return (os.environ[var], 0)
+		else:
+			return ("", 1)
+	else:
+		retval = ""
+
+		for (key, val) in os.environ.items()
+			retval += "%s=%s\n" % (key, val,)
+
+		return (retval.rstrip(), 0)
 
 def main():
-	prog = pybasename(sys.argv[0])
+	prog = os.path.basename(sys.argv[0])
 
 	if len(sys.argv) == 1:
-		(str, rc) = pyprintenv()
+		(str, rc) = xprintenv()
 		print str
 		sys.exit(rc)
 
 	if sys.argv[1] == "--help":
-		try:
-			from pycoreutils.usage import pyprintenv_usage
-			pyprintenv_usage(prog)
-		except:
-			print "Help screen is not available."
-
+		usage(prog)
 		sys.exit(0)
 	elif sys.argv[1] == "--version":
-		showversion(prog, pyprintenvver)
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
 	else:
-		(str, rc) = pyprintenv(sys.argv[1])
+		(str, rc) = xprintenv(sys.argv[1])
 		if str != "":
 			print str
 		sys.exit(rc)

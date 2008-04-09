@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 #
-# pymkdir.py - mkdir(1) core functionality
-# Copyright (C) 2007  David Hilley <davidhi@cc.gatech.edu>
+# mkdir.py - mkdir(1) command written in Python
+# Copyright (C) 2007, 2008  David Hilley <davidhi@cc.gatech.edu>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,10 +18,13 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
+ver = (2, 0)
+
+import getopt
 import os
 import re
-import sys
 import stat
+import sys
 from stat import *
 
 try:
@@ -29,20 +33,20 @@ except:
 	print "SELinux support is not available on this system."
 	sys.exit(1)
 
-usermasks = {	'a' : 07777,
-		'u' : S_ISUID | S_IRWXU,
-		'g' : S_ISGID | S_IRWXG,
-		'o' : S_ISVTX | S_IRWXO,}
+usermasks = { 'a' : 07777,
+              'u' : S_ISUID | S_IRWXU,
+              'g' : S_ISGID | S_IRWXG,
+              'o' : S_ISVTX | S_IRWXO, }
 
-permmods = {	'x' : S_IXUSR | S_IXGRP | S_IXOTH,
-		'w' : S_IWUSR | S_IWGRP | S_IWOTH,
-		'r' : S_IRUSR | S_IRGRP | S_IROTH,
-		's' : S_ISUID | S_ISGID,
-		't' : S_ISVTX, }
+permmods = { 'x' : S_IXUSR | S_IXGRP | S_IXOTH,
+             'w' : S_IWUSR | S_IWGRP | S_IWOTH,
+             'r' : S_IRUSR | S_IRGRP | S_IROTH,
+             's' : S_ISUID | S_ISGID,
+             't' : S_ISVTX, }
 
-usermods = {	'u' : (S_IRWXU, 6),
-		'g' : (S_IRWXG, 3),
-		'o' : (S_IRWXO, 0),}
+usermods = { 'u' : (S_IRWXU, 6),
+             'g' : (S_IRWXG, 3),
+             'o' : (S_IRWXO, 0), }
 
 def mask_and_extend(startmode, mask, shift):
 	t = (startmode & mask) >> shift
@@ -75,13 +79,13 @@ def apply_mod(s, startmode, umask):
 		for c in m[1:]:
 			app = apply_permmod(app, mask, startmode, c)
 		if m[0] == '+':
-			result |= app  
+			result |= app
 		elif m[0] == '-':
 			result &= ~app
 		else:
 			result &= ~mask
-                        result |= app
-	
+			result |= app
+
 	return result
 
 def parse_symbolic_mode(mode, umask):
@@ -117,14 +121,14 @@ def parse_mode(mode, mask):
 def makewithparents(name, mode, mask, verbose=False, innercall=False):
 	rv = 0
 	if not innercall:
-		leaf_mode = mode
+		leaf_node = mode
 		mode = 0777 & ~mask | S_IWUSR | S_IXUSR
 	head, tail = os.path.split(name)
 	if not tail:
 		head, tail = os.path.split(head)
 	if head and tail and not os.path.exists(head):
 		rv = makewithparents(head, mode, mask, verbose, True)
-		if tail == os.curdir:		
+		if tail == os.curdir:
 			return 0
 	if not innercall:
 		mode = leaf_mode
@@ -138,7 +142,7 @@ def makeonedir(d, mode, mask, verbose=False, parent=False):
 				return 0
 			elif os.path.isfile(d):
 				sys.stderr.write("mkdir: `%s' exists "
-						 "but is not a directory\n" % d)
+				                 "but is not a directory\n" % d)
 				return 1
 		os.mkdir(d, mode)
 		if verbose:
@@ -146,10 +150,10 @@ def makeonedir(d, mode, mask, verbose=False, parent=False):
 		return 0
 	except OSError, o:
 		sys.stderr.write("mkdir: cannot create directory `%s': %s\n"
-				 % (d, o.strerror))
+		                 % (d, o.strerror))
 		return 1
 
-def pymkdir(dirlist, mode, parents=False, verbose=False, con=None):
+def xmkdir(dirlist, mode, parents=False, verbose=False, con=None):
 	ret = 0
 
 	if con is not None:
@@ -166,3 +170,66 @@ def pymkdir(dirlist, mode, parents=False, verbose=False, con=None):
 		ret |= rv
 
 	return ret
+
+def usage(cmd):
+	print "Usage: %s [OPTION] DIRECTORY..." % (cmd,)
+	print "Create the DIRECTORY(ies), if they do not already exist.\n"
+	print "      -m, --mode=MODE"
+	print "                 set permission mode (as in chmod), not rwxrwxrwx - umask"
+	print "      -p, --parents"
+	print "                 no error if existing, make parent directories as needed"
+	print "      -v, --verbose"
+	print "                 print a message for each created directory"
+	print "      -Z, --context=CONTEXT"
+	print "                 set the SELinux security context of each created"
+	print "                 directory to CONTEXT"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit"
+
+def main():
+	prog = os.path.basename(sys.argv[0])
+	con = None
+	mode = None
+	parents, verbose = False, False
+	help, version = False, False
+
+	opts, args = [], []
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "Zm:pv",
+		                           ["context=", "mode=", "parents",
+		                            "verbose", "help", "version"])
+	except getopt.GetoptError:
+		help = True
+                
+	for o, a in opts:
+		if o in ("-Z", "--context"):
+			try:
+				import selinux
+				context = a
+			except:
+				print "SELinux support is not available on this system."
+				sys.exit(1)
+		if o in ("-m", "--mode"):
+			mode = a
+		if o in ("-p", "--parents"):
+			parents = True
+		if o in ("-v", "--verbose"):
+			verbose = True
+		if o in ("--help"):
+			help = True
+		if o in ("--version"):
+			version = True
+
+	if len(args) == 0 or help:
+		usage(prog)
+		sys.exit(0)
+	elif version:
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
+	else:
+		ret = xmkdir(args, mode, parents, verbose, con=context)
+		sys.exit(ret)
+
+if __name__ == "__main__":
+	main()
