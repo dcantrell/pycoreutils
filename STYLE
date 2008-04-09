@@ -2,12 +2,14 @@ src/
    These programs are the commands.  The ones that replace the /bin and
    /usr/bin commands in GNU coreutils.
 
-   The driver should contain a pyCMDver tuple with the major and minor
-   version number.  The version is unique to the command.
+   The driver should contain a ver tuple with the major and minor version
+   number.  The version is unique to the command.
 
    The driver should contain all functionality in a main() function and
    call that main() function from the bottom of the script in an
-   if __name__ == "__main__" block.
+   if __name__ == "__main__" block.  Within reason, of course.  Your
+   main() function is allowed to call other functions that you make, but
+   they should all be contained in the single command.
 
 pycoreutils/
    Supplementary module.  Some things have to be implementation as Python
@@ -20,5 +22,5 @@ Style
 
    * We use tab characters for indentation, not spaces.
    * Each .py file has a GPL boilerplate at the top with the name of
-     the author (you).  Add yourself to the COPYRIGHT file if you
-     are not already there.
+     the author (you).
+   * Add yourself to the AUTHORS file if you aren't already listed.
