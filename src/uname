@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # uname.py - uname(1) command written in Python
-# Copyright (C) 2007  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,21 +18,75 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-pyunamever = (1, 0)
+ver = (2, 0)
 
-import getopt, sys
-from pycoreutils.common import *
-from pycoreutils.pyuname import pyuname
-from pycoreutils.pybasename import pybasename
+import getopt
+import os
+import posix
+import sys
+
+def usage(cmd):
+	print "Usage: %s [OPTION]..." % (cmd,)
+	print "Print certain system information.  With no OPTION, same as -s.\n"
+	print "  -a, --all                print all information, in the following order,"
+	print "                             except omit -p and -i if unknown:"
+	print "  -s, --kernel-name        print the kernel name"
+	print "  -n, --nodename           print the network node hostname"
+	print "  -r, --kernel-release     print the kernel release"
+	print "  -v, --kernel-version     print the kernel version"
+	print "  -m, --machine            print the machine hardware name"
+	print "  -p, --processor          print the processor type or \"unknown\""
+	print "  -i, --hardware-platform  print the hardware platform or \"unknown\""
+	print "  -o, --operating-system   print the operating system"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit"
+
+def xuname():
+	ret = {}
+	(sysname, nodename, release, version, machine,) = posix.uname()
+
+	if machine == 'i686':
+		processor = machine
+
+		try:
+			f = open('/proc/cpuinfo', 'r')
+			for l in f.readlines():
+				if l.startswith('vendor_id'):
+					if l.find('AuthenticAMD') != -1:
+						processor = 'athlon'
+						break
+			f.close()
+		except:
+			pass
+
+	platform = machine
+	if platform.startswith('i') and platform.endswith('86'):
+		platform = 'i386'
+
+	# FIXME: does not support anything other than Linux right now
+	opsys = sysname
+	if opsys == 'Linux':
+		opsys = 'GNU/Linux'
+
+	ret['sysname'] = sysname
+	ret['nodename'] = nodename
+	ret['release'] = release
+	ret['version'] = version
+	ret['machine'] = machine
+	ret['processor'] = processor
+	ret['platform'] = platform
+	ret['opsys'] = opsys
+
+	return ret
 
 def main():
-	prog = pybasename(sys.argv[0])
+	prog = os.path.basename(sys.argv[0])
 	opts, args = [], []
 	all, help, version, unknown = False, False, False, False
 	s, n, r, v, m, pr, pl, os = False, False, False, False, False, False, False, False
 	num = 0
 
-	val = pyuname()
+	val = xuname()
 
 	if len(sys.argv) == 1:
 		print val['sysname']
@@ -84,15 +138,11 @@ def main():
 			unknown = True
 
 	if help:
-		try:
-			from pycoreutils.usage import pyuname_usage
-			pyuname_usage(prog)
-		except:
-			print "Help screen is not available."
-
+		usage(prog)
 		sys.exit(0)
 	elif version:
-		showversion(prog, pyunamever)
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
 	elif unknown:
 		print "%s: extra operand `%s'" % (prog, sys.argv[1],)
 		print "Try `%s --help' for more information." % (prog,)

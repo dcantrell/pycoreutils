@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # tee.py - tee(1) command written in Python
-# Copyright (C) 2007  David Hilley <davidhi@cc.gatech.edu>
+# Copyright (C) 2007, 2008  David Hilley <davidhi@cc.gatech.edu>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,15 +18,56 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-pyteever = (1, 0)
+ver = (2, 0)
 
-import getopt, sys
-from pycoreutils.common import *
-from pycoreutils.pytee import pytee
-from pycoreutils.pybasename import pybasename
+import getopt
+import os
+import sys
+
+def usage(cmd):
+	print "Usage: %s [OPTION]... [FILE]..." % (cmd,)
+	print "Copy standard input to each FILE, and also to standard output.\n"
+	print "      -a, --append"
+	print "                 append to the given FILEs, do not overwrite"
+	print "      -i, --ignore-interrupts"
+	print "                 ignore interrupt signals"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit"
+
+def openfile((fname, append)):
+	mode = ("wb", "ab")[append]
+		
+	if fname == "-":
+		return sys.stdout
+	else:
+		f = None
+		try:
+			f = file(fname, mode, 0)
+		except IOError, ioe:
+			sys.stderr.write("tee: %s: %s\n" % (fname, ioe.strerror))
+		return f
+
+def xtee(files, append=False):
+	files = [(f, append) for f in files]
+
+	sys.stdin = os.fdopen(sys.stdin.fileno(), "rb", 0)
+	sys.stdout = os.fdopen(sys.stdout.fileno(), "wb", 0)
+	
+	openfiles = filter(None, map(openfile, files))
+
+	stdin_fd = sys.stdin.fileno()
+
+	while True:
+		s = os.read(stdin_fd, 1024)
+		if s == "":
+			break
+		for f in openfiles:
+			f.write(s)
+
+	return 0
 
 def main():
-	prog = pybasename(sys.argv[0])
+	prog = os.path.basename(sys.argv[0])
 	append, ignoreint = False, False
 	help, version = False, False
 
@@ -50,21 +91,17 @@ def main():
 			version = True
 
 	if help:
-		try:
-			from pycoreutils.usage import pytee_usage
-			pytee_usage(prog)
-		except:
-			print "Help screen is not available."
-
+		usage(prog)
 		sys.exit(0)
 	elif version:
-		showversion(prog, pyteever)
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
 	else:
 		if ignoreint:
 			import signal
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-		pytee(args + ['-'], append)
+		xtee(args + ['-'], append)
 		sys.exit(0)
 
 if __name__ == "__main__":

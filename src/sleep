@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+#
+# sleep.py - sleep(1) command written in Python
+# Copyright (C) 2007, 2008  Chris Lumens <clumens@redhat.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+
+ver = (2, 0)
+
+import os
+import re
+import sys
+import time
+
+def usage(cmd):
+	print "Usage: %s NUMBER[SUFFIX]..." % (cmd,)
+	print "   or: %s OPTION" % (cmd,)
+	print "Pause for NUMBER seconds.  SUFFIX may be `s' for seconds (the default),"
+	print "`m' for minutes, `h' for hours, or `d' for days.  Unlink most implementations"
+	print "that require NUMBER be an integer, here NUMBER may be an arbitrary floating"
+	print "point number.\n"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit"
+
+def xsleep(timespec):
+	secs = 0
+	suffix = 's'
+
+	m = re.match("^([0-9]+(\.[0-9]+)?)([smhd])?$", timespec)
+
+	if m is None:
+		return 1
+
+	secs = float(m.group(1))
+	suffix = m.group(3)
+
+	if suffix == 'm':
+		secs *= 60
+	elif suffix == 'h':
+		secs *= 60*60
+	elif suffix == 'd':
+		secs *= 60*60*24
+
+	try:
+		time.sleep(secs)
+	except KeyboardInterrupt:
+		return 258
+
+	return 0
+
+def main():
+	prog = os.path.basename(sys.argv[0])
+
+	if len(sys.argv) == 1 or sys.argv[1] == "--help":
+		usage(prog)
+		sys.exit(0)
+	elif sys.argv[1] == "--version":
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
+	else:
+		rc = xsleep(sys.argv[1])
+
+		if rc == 1:
+			print "%s: invalid time interval `%s'" % (prog, sys.argv[1])
+			usage(prog)
+
+		sys.exit(rc)
+
+if __name__ == "__main__":
+	main()
