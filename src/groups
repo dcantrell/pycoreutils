@@ -66,6 +66,7 @@ def main():
 	elif sys.argv[1] == "--version":
 		c += 1
 		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
 	else:
 		userlist = []
 		if len(sys.argv) - c > 0:
