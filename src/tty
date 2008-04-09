@@ -24,7 +24,7 @@ import os
 import posix
 import sys
 
-def usage(prog):
+def usage(cmd):
 	print "Usage: %s [OPTION]..." % (cmd,)
 	print "Print the file name of the terminal connected to standard input.\n"
 	print "  -s, --silent, --quiet   print nothing, only return an exit status"
