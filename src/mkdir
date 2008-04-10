@@ -27,11 +27,12 @@ import stat
 import sys
 from stat import *
 
+# only offer SELinux if we have that Python module
 try:
 	import selinux
+	useSELinux = True
 except:
-	print "SELinux support is not available on this system."
-	sys.exit(1)
+	useSELinux = False
 
 usermasks = { 'a' : 07777,
               'u' : S_ISUID | S_IRWXU,
@@ -156,7 +157,7 @@ def makeonedir(d, mode, mask, verbose=False, parent=False):
 def xmkdir(dirlist, mode, parents=False, verbose=False, con=None):
 	ret = 0
 
-	if con is not None:
+	if con is not None and useSELinux is True:
 		selinux.setcon(con)
 
 	mask = os.umask(0)
@@ -180,9 +181,12 @@ def usage(cmd):
 	print "                 no error if existing, make parent directories as needed"
 	print "      -v, --verbose"
 	print "                 print a message for each created directory"
-	print "      -Z, --context=CONTEXT"
-	print "                 set the SELinux security context of each created"
-	print "                 directory to CONTEXT"
+
+	if useSELinux is True:
+		print "      -Z, --context=CONTEXT"
+		print "                 set the SELinux security context of each created"
+		print "                 directory to CONTEXT"
+
 	print "      --help     display this help and exit"
 	print "      --version  output version information and exit"
 
@@ -203,13 +207,8 @@ def main():
 		help = True
                 
 	for o, a in opts:
-		if o in ("-Z", "--context"):
-			try:
-				import selinux
-				context = a
-			except:
-				print "SELinux support is not available on this system."
-				sys.exit(1)
+		if o in ("-Z", "--context") and useSELinux is True:
+			context = a
 		if o in ("-m", "--mode"):
 			mode = a
 		if o in ("-p", "--parents"):
