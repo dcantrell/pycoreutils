@@ -1,0 +1,183 @@
+#!/usr/bin/env python
+#
+# md5sum - md5sum(1) command written in Python
+# Copyright (C) 2008  David Cantrell <david.l.cantrell@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+
+import getopt
+import md5
+import os
+import sys
+
+ver = (1, 0)
+
+def usage(cmd):
+	print "Usage: %s [OPTION] [FILE]..." % (cmd,)
+	print "Print or check MD5 (128-but) checksums."
+	print "With no FILE, or when FILE is -, read standard input.\n"
+	print "  -b, --binary            read in binary mode"
+	print "  -c, --check             read MD5 sums from the FILEs and check them"
+	print "  -t, --text              read in text mode (default)\n"
+	print "The following two options are useful only when verifying checksums:"
+	print "      --status            don't output anything, status code shows success"
+	print "  -w, --warn              warn about improperly formatted checksum lines\n"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit\n"
+	print "The sums are computed as described in RFC 1321.  When checking, the input"
+	print "should be a former output of this program.  The default mode is to print"
+	print "a line with checksum, a character indicating type (`*' for binary, ` ' for text), and name for each FILE."
+
+def digest_check(sumfile):
+	ret = True
+
+	if not os.path.isfile(sumfile):
+		print "ERROR: %s does not exist" % (sumfile,)
+		return False
+
+	fd = open(os.path.realpath(sumfile), 'r')
+	lines = map(lambda e: e.strip(), fd.readlines())
+	fd.close()
+
+	for line in lines:
+		pair = line.split('  ')
+		if pair[0] == calc_digest(pair[1]):
+			print "%s: OK" % (pair[1],)
+		else:
+			ret = False
+
+	return ret
+
+def calc_digest(filename, binary):
+	ret = True
+
+	if filename == '-':
+		fd = sys.stdin
+	else:
+		if not os.path.isfile(filename):
+			print "%s: No such file" % (filename,)
+			ret = False
+			return ''
+
+	try:
+		if binary:
+			fd = file(filename, 'rb')
+		else:
+			fd = file(filename, 'r')
+	except:
+		print "Unable to open %s" % (filename,)
+		ret = False
+		return (ret, '')
+
+	calc = md5.new()
+	calc.update(fd.read())
+	fd.close()
+
+	return (ret, calc.hexdigest())
+
+def main():
+	prog = os.path.basename(sys.argv[0])
+	opts, args = [], []
+	status, help, version, unknown = False, False, False, False
+	binary, check, text, warn = False, False, False, False
+	ret = True
+	type = ' '
+	digestHexBytes = (128 / 4)
+	minDigestLineLength = digestHexBytes + 3
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], 'bctw',
+		                           ['binary', 'check', 'text',
+		                            'status', 'warn', 'help',
+		                            'version'])
+	except getopt.GetoptError:
+		help = True
+
+	for o, a in opts:
+		if o in ('b', 'binary'):
+			binary = True
+			type = '*'
+		elif o in ('c', 'check'):
+			check = True
+		elif o in ('t', 'text'):
+			text = True
+		elif o in ('status'):
+			status = True
+			warn = False
+		elif o in ('w', 'warn'):
+			warn = True
+		elif o in ('help'):
+			help = True
+		elif o in ('version'):
+			version = True
+		else:
+			unknown = True
+
+	if help:
+		usage(prog)
+		sys.exit(1)
+	elif version:
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
+	elif unknown:
+		if sys.argv[1].startswith('--'):
+			helpstr = 'unrecognized option'
+		else:
+			helpstr = 'invalid option --'
+
+		print "%s: %s '%s'" % (prog, helpstr, sys.argv[1],)
+		print "Try `%s --help' for more information." % (prog,)
+
+	if not binary and text and check:
+		print "the --binary and --text options are meaningless when verifying checksums"
+		usage(prog)
+		sys.exit(1)
+
+	if status and not check:
+		print "the --status option is meaningful only when verifying checksums"
+		usage(prog)
+		sys.exit(1)
+
+	if warn and not check:
+		print "the --warn option is meaningful only when verifying checksums"
+		usage(prog)
+		sys.exit(1)
+
+	if args == []:
+		args.append('-')
+
+	for arg in args:
+		if check:
+			ret &= digest_check(arg)
+		else:
+			(calcret, digest) = calc_digest(arg, binary)
+			ret &= calcret
+
+			# output a leading backslash if the name contains
+			# a newline or backslash
+			if arg.find('\\') != -1 or arg.find('\n') != -1:
+				sys.stdout.write("\\")
+
+			# convert each newline in the filename to "\\n"
+			# and each backslash to "\\\\"
+			arg = arg.replace('\n', '\\n').replace('\\', '\\\\')
+
+			print "%32s %s %s" % (digest, type, arg,)
+
+	sys.exit(not int(ret))
+
+if __name__ == "__main__":
+	main()
