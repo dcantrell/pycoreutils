@@ -55,7 +55,7 @@ def check_digest(sumfile, statusonly=False):
 
 			fd = open(os.path.realpath(sumfile), 'r')
 	except IOError, e:
-		sys.stderr.write("%s: %s: %s\n" % (os.path.basename(sys.argv[0]), sumfile, os.strerror(e.errno),)
+		sys.stderr.write("%s: %s: %s\n" % (os.path.basename(sys.argv[0]), sumfile, os.strerror(e.errno),))
 		return False
 
 	lines = map(lambda e: e.strip(), fd.readlines())
