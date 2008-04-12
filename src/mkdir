@@ -209,15 +209,15 @@ def main():
 	for o, a in opts:
 		if o in ("-Z", "--context") and useSELinux is True:
 			context = a
-		if o in ("-m", "--mode"):
+		elif o in ("-m", "--mode"):
 			mode = a
-		if o in ("-p", "--parents"):
+		elif o in ("-p", "--parents"):
 			parents = True
-		if o in ("-v", "--verbose"):
+		elif o in ("-v", "--verbose"):
 			verbose = True
-		if o in ("--help"):
+		elif o in ("--help"):
 			help = True
-		if o in ("--version"):
+		elif o in ("--version"):
 			version = True
 
 	if len(args) == 0 or help:

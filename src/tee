@@ -83,11 +83,11 @@ def main():
 	for o, a in opts:
 		if o in ("-a", "--append"):
 			append = True
-		if o in ("-i", "--ignore-interrupts"):
+		elif o in ("-i", "--ignore-interrupts"):
 			ignoreint = True
-		if o in ("--help"):
+		elif o in ("--help"):
 			help = True
-		if o in ("--version"):
+		elif o in ("--version"):
 			version = True
 
 	if help:
