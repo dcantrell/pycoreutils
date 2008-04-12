@@ -39,7 +39,8 @@ def usage(cmd):
 	print "      --version  output version information and exit\n"
 	print "The sums are computed as described in RFC 1321.  When checking, the input"
 	print "should be a former output of this program.  The default mode is to print"
-	print "a line with checksum, a character indicating type (`*' for binary, ` ' for text), and name for each FILE."
+	print "a line with checksum, a character indicating type (`*' for binary, ` ' for"
+	print "text), and name for each FILE."
 
 def digest_check(sumfile):
 	ret = True
@@ -53,15 +54,24 @@ def digest_check(sumfile):
 	fd.close()
 
 	for line in lines:
-		pair = line.split('  ')
-		if pair[0] == calc_digest(pair[1]):
-			print "%s: OK" % (pair[1],)
+		if pair[32:34] == ' *':
+			binary = True
+		else:
+			binary = False
+
+		digest = pair[:32]
+		filename = pair[34:]
+
+		(calcret, calcdigest) = calc_digest(filename, binary)
+
+		if calcret and digest == calcdigest:
+			print "%s: OK" % (filename,)
 		else:
 			ret = False
 
 	return ret
 
-def calc_digest(filename, binary):
+def calc_digest(filename, binary=False):
 	ret = True
 
 	if filename == '-':
@@ -99,29 +109,29 @@ def main():
 	minDigestLineLength = digestHexBytes + 3
 
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], 'bctw',
-		                           ['binary', 'check', 'text',
-		                            'status', 'warn', 'help',
-		                            'version'])
+		opts, args = getopt.getopt(sys.argv[1:], "bctw",
+		                           ["binary", "check", "text",
+		                            "status", "warn", "help",
+		                            "version"])
 	except getopt.GetoptError:
 		help = True
 
 	for o, a in opts:
-		if o in ('b', 'binary'):
+		if o in ("-b", "--binary"):
 			binary = True
 			type = '*'
-		elif o in ('c', 'check'):
+		elif o in ("-c", "--check"):
 			check = True
-		elif o in ('t', 'text'):
+		elif o in ("-t", "--text"):
 			text = True
-		elif o in ('status'):
+		elif o in ("--status"):
 			status = True
 			warn = False
-		elif o in ('w', 'warn'):
+		elif o in ("-w", "--warn"):
 			warn = True
-		elif o in ('help'):
+		elif o in ("--help"):
 			help = True
-		elif o in ('version'):
+		elif o in ("--version"):
 			version = True
 		else:
 			unknown = True
