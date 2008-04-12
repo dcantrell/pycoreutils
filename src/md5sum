@@ -185,7 +185,7 @@ def main():
 			# and each backslash to "\\\\"
 			arg = arg.replace('\n', '\\n').replace('\\', '\\\\')
 
-			print "%32s %s %s" % (digest, type, arg,)
+			print "%32s %s%s" % (digest, type, arg,)
 
 	sys.exit(not int(ret))
 
