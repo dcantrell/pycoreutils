@@ -42,14 +42,22 @@ def usage(cmd):
 	print "a line with checksum, a character indicating type (`*' for binary, ` ' for"
 	print "text), and name for each FILE."
 
-def digest_check(sumfile):
+def check_digest(sumfile, statusonly=False):
 	ret = True
 
-	if not os.path.isfile(sumfile):
-		print "ERROR: %s does not exist" % (sumfile,)
+	try:
+		if sumfile == '-':
+			fd = open(sys.stdin, 'r')
+		else:
+			if not os.path.isfile(sumfile):
+				sys.stderr.write("ERROR: %s does not exist\n" % (sumfile,))
+				return False
+
+			fd = open(os.path.realpath(sumfile), 'r')
+	except IOError, e:
+		sys.stderr.write("%s: %s: %s\n" % (os.path.basename(sys.argv[0]), sumfile, os.strerror(e.errno),)
 		return False
 
-	fd = open(os.path.realpath(sumfile), 'r')
 	lines = map(lambda e: e.strip(), fd.readlines())
 	fd.close()
 
@@ -62,10 +70,11 @@ def digest_check(sumfile):
 		digest = pair[:32]
 		filename = pair[34:]
 
-		(calcret, calcdigest) = calc_digest(filename, binary)
+		(calcret, calcdigest) = calc_digest(filename, binary=binary)
 
 		if calcret and digest == calcdigest:
-			print "%s: OK" % (filename,)
+			if not statusonly:
+				print "%s: OK" % (filename,)
 		else:
 			ret = False
 
@@ -171,9 +180,9 @@ def main():
 
 	for arg in args:
 		if check:
-			ret &= digest_check(arg)
+			ret &= check_digest(arg, statusonly=status)
 		else:
-			(calcret, digest) = calc_digest(arg, binary)
+			(calcret, digest) = calc_digest(arg, binary=binary)
 			ret &= calcret
 
 			# output a leading backslash if the name contains
