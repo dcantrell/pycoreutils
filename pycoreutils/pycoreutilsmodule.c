@@ -21,7 +21,7 @@
 #include <Python.h>
 #include <unistd.h>
 
-static PyObject *hostid(PyObject *self, PyObject *args) {
+static PyObject *hostid_cmd(PyObject *self, PyObject *args) {
 	unsigned int id;
 	char ret[9];
 
@@ -33,15 +33,15 @@ static PyObject *hostid(PyObject *self, PyObject *args) {
 	return Py_BuildValue("s", ret);
 }
 
-static PyObject *sync(PyObject *self, PyObject *args) {
+static PyObject *sync_cmd(PyObject *self, PyObject *args) {
 	sync();
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
 static PyMethodDef pycoreutilsMethods[] = {
-	{ "hostid", (PyCFunction) hostid, METH_VARARGS, NULL },
-	{ "sync", (PyCFunction) sync, METH_VARARGS, NULL },
+	{ "hostid", (PyCFunction) hostid_cmd, METH_VARARGS, NULL },
+	{ "sync", (PyCFunction) sync_cmd, METH_VARARGS, NULL },
 	{ NULL, NULL, 0, NULL }
 };
 
