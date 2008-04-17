@@ -19,6 +19,7 @@
 #
 
 import getopt
+import glob
 import sha
 import os
 import sys
@@ -179,22 +180,28 @@ def main():
 		args.append('-')
 
 	for arg in args:
-		if check:
-			ret &= check_digest(arg, statusonly=status)
-		else:
-			(calcret, digest) = calc_digest(arg, binary=binary)
-			ret &= calcret
+		sublist = glob.glob(arg)
 
-			# output a leading backslash if the name contains
-			# a newline or backslash
-			if arg.find('\\') != -1 or arg.find('\n') != -1:
-				sys.stdout.write("\\")
+		for subarg in sublist:
+			if check:
+				ret &= check_digest(subarg, statusonly=status)
+			else:
+				(calcret, digest) = calc_digest(subarg,
+				                                binary=binary)
+				ret &= calcret
 
-			# convert each newline in the filename to "\\n"
-			# and each backslash to "\\\\"
-			arg = arg.replace('\n', '\\n').replace('\\', '\\\\')
+				# output a leading backslash if the name
+				# contains a newline or backslash
+				if subarg.find('\\') != -1 or \
+				   subarg.find('\n') != -1:
+					sys.stdout.write("\\")
 
-			print "%32s %s%s" % (digest, type, arg,)
+				# convert each newline in the filename to "\\n"
+				# and each backslash to "\\\\"
+				subarg = subarg.replace('\n', '\\n')
+				subarg = subarg.replace('\\', '\\\\')
+
+				print "%32s %s%s" % (digest, type, subarg,)
 
 	sys.exit(not int(ret))
 
