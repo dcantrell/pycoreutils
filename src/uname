@@ -44,10 +44,9 @@ def usage(cmd):
 def xuname():
 	ret = {}
 	(sysname, nodename, release, version, machine,) = posix.uname()
+	processor = machine
 
 	if machine == 'i686':
-		processor = machine
-
 		try:
 			f = open('/proc/cpuinfo', 'r')
 			for l in f.readlines():
@@ -83,7 +82,7 @@ def main():
 	prog = os.path.basename(sys.argv[0])
 	opts, args = [], []
 	all, help, version, unknown = False, False, False, False
-	s, n, r, v, m, pr, pl, os = False, False, False, False, False, False, False, False
+	s, n, r, v, m, pr, pl, opsys = False, False, False, False, False, False, False, False
 	num = 0
 
 	val = xuname()
@@ -128,7 +127,7 @@ def main():
 			pl = True
 			num += 1
 		elif o in ('-o', '--operating-system'):
-			os = True
+			opsys = True
 			num += 1
 		elif o in ('--help'):
 			help = True
@@ -185,7 +184,7 @@ def main():
 		if num > 1:
 			sys.stdout.write(' ')
 
-	if os:
+	if opsys:
 		sys.stdout.write(val['opsys'])
 
 	sys.stdout.write('\n')
