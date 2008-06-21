@@ -1,0 +1,226 @@
+#!/usr/bin/env python
+#
+# cut - cut(1) command written in Python
+# Copyright (C) 2008  David Cantrell <david.l.cantrell@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+
+import getopt
+import os
+import sys
+
+ver = (1, 0)
+
+def usage(cmd):
+	print "Usage: %s [OPTION]... [FILE]..." % (cmd,)
+	print "Print selected parts of lines from each FILE to standard output.\n"
+	print "Mandatory arguments to long options are mandatory for short options too."
+	print "  -b, --bytes=LIST               select only these bytes"
+	print "  -c, --characters=LIST          select only these characters"
+	print "  -d, --delimiter=DELIM          use DELIM instead of TAB for field delimiter"
+	print "  -f, --fields=LIST              select only these fields; also print any line"
+	print "                                   that contains no delimiter character, unless"
+	print "                                   the -s option is specified"
+	print "  -n                             with -b: don't split multibyte characters"
+	print "      --complement               complement the set of selected bytes,"
+	print "                                   characters, or fields"
+	print "  -s, --only-delimited           print lines only containing delimiters"
+	print "      --output-delimiter=STRING  use STRING as the output delimiter"
+	print "                                 the default is to use the input delimiter"
+	print "      --help                     display this help and exit"
+	print "      --version                  output version information and exit\n"
+	print "Use one, and only one of -b, -c, or -f.  Each LIST is made up of one"
+	print "range, or many ranges separated by commas.  Selected input is written"
+	print "in the same order that it is read, and is written exactly once."
+	print "Each range is one of:\n"
+	print "  N     N'th byte, character or field, counted from 1"
+	print "  N-    from N'th byte, character or field, to end of line"
+	print "  N-M   from N'th to M'th (inclusive) byte, character or field"
+	print "  -M    from first to M'th (inclusive) byte, character, or field\n"
+	print "With no FILE, or when FILE is -, read standard input."
+
+def error_exit(prog, errorstr):
+	sys.stderr.write("%s: %s\n" % (prog, errorstr,))
+	sys.stderr.write("Try `%s --help' for more information.\n" % (prog,))
+	sys.exit(1)
+
+def break_specification(specification):
+	ret = []
+
+	for spec in specification.split(','):
+		range = spec.split('-')
+
+		if range[0] != '':
+			range[0] = int(range[0]) - 1
+
+		if len(range) > 1:
+			if range[1] != '':
+				range[1] = int(range[1]) - 1
+
+		if len(range) == 1:
+			ret.append((range[0], range[0]))
+		elif spec.startswith('-'):
+			ret.append((0, range[1]))
+		elif spec.endswith('-'):
+			ret.append((range[0], None))
+		else:
+			ret.append((range[0], range[1]))
+
+	return ret
+
+def main():
+	prog = os.path.basename(sys.argv[0])
+	opts, args = [], []
+	mode, specification, delim, output_delim = None, None, None, None
+	multibyte_split = True
+	complement, only_delimited = False, False
+	help, version, unknown = False, False, False
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "b:c:d:f:ns",
+		                           ["bytes", "characters", "delimiter",
+		                            "fields", "complement",
+		                            "only-delimited",
+		                            "output-delimiter", "help",
+		                            "version"])
+	except getopt.GetoptError:
+		help = True
+
+	for o, a in opts:
+		if o in ("-b", "--bytes"):
+			if mode is not None:
+				error_exit(prog, "only one type of list may be specified")
+
+			mode = "byte"
+			specification = a
+		elif o in ("-c", "--characters"):
+			if mode is not None:
+				error_exit(prog, "only one type of list may be specified")
+
+			mode = "character"
+			specification = a
+		elif o in ("-d", "--delimiter"):
+			delim = a
+
+			if len(delim) > 1:
+				error_exit(prog, "the delimiter must be a single character")
+				sys.exit(1)
+		elif o in ("-f", "--fields"):
+			if mode is not None:
+				error_exit(prog, "only one type of list may be specified")
+
+			mode = "field"
+			specification = a
+		elif o in ("-n"):
+			multibyte_split = False
+			sys.stderr.write("FIXME: the -n option has not been implemented\n")
+		elif o in ("--complement"):
+			complement = True
+			sys.stderr.write("FIXME: the --complement option has not been implemented\n")
+		elif o in ("-s", "--only-delimited"):
+			only_delimited = True
+		elif o in ("--output-delimiter"):
+			output_delim = a
+
+			if len(output_delim) > 1:
+				error_exit(prog, "the output delimiter must be a single character")
+				sys.exit(1)
+		elif o in ("--help"):
+			help = True
+		elif o in ("--version"):
+			version = True
+		else:
+			unknown = True
+
+	if help:
+		usage(prog)
+		sys.exit(1)
+	elif version:
+		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+		sys.exit(0)
+	elif unknown:
+		if sys.argv[1].startswith('--'):
+			helpstr = "unrecognized option '%s'" % (sys.argv[1],)
+		else:
+			helpstr = "invalid option -- '%s'" % (sys.argv[1],)
+
+		error_exit(prog, helpstr)
+
+	if mode is None:
+		error_exit(prog, "you must specify a list of bytes, characters, or fields")
+
+	if delim is not None and mode != "field":
+		error_exit(prog, "an input delimiter may only be specified when operating on fields")
+
+	if only_delimited and mode != "field":
+		error_exit(prog, "suppressing non-delimited lines may only be used when operating on fields")
+
+	if mode == "field" and delim is None:
+		delim = '\t'
+
+	if output_delim is None:
+		output_delim = delim
+
+	if args == []:
+		args.append("-")
+
+	for arg in args:
+		try:
+			if arg == '-':
+				inlines = map(lambda e: e.strip(), sys.stdin.readlines())
+			else:
+				fp = open(arg, "r")
+				inlines = map(lambda e: e.strip(), fp.readlines())
+				fp.close()
+		except IOError, (errno, strerror):
+			sys.stderr.write("%s: %s: %s\n" % (prog, arg, strerror,))
+			sys.exit(1)
+		except:
+			sys.stderr.write("%s: Unexpected error: %s\n" % (prog, sys.exc_info()[0],))
+			raise
+
+		results = []
+
+		for line in inlines:
+			if line.find(delim) == -1 and only_delimited:
+				continue
+
+			if mode == "field":
+				tmpfields = line.split(delim)
+
+				for (s, e) in break_specification(specification):
+					if e is None:
+						e = len(tmpfields)
+
+					i = s
+					while i <= e:
+						sys.stdout.write("%s%s" % (tmpfields[i], output_delim,))
+						i += 1
+
+				sys.stdout.write("\n")
+			elif mode == "character" or mode == "byte":
+				for (s, e) in break_specification(specification):
+					if s is None:
+						sys.stdout.write("%s%s" % (line[:e], output_delim,))
+					elif e is None:
+						sys.stdout.write("%s%s" % (line[s:], output_delim,))
+					else:
+						sys.stdout.write("%s%s" % (line[s:e], output_delim,))
+
+				sys.stdout.write("\n")
+
+if __name__ == "__main__":
+	main()

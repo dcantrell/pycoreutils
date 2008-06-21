@@ -4,7 +4,6 @@
     /bin/chmod
     /bin/chown
     /bin/cp
-    /bin/cut
     /bin/date
     /bin/dd
     /bin/df
