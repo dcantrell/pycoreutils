@@ -78,9 +78,4 @@
     /usr/bin/who
     /usr/sbin/chroot
 
-* Move command usage stuff out of pycoreutils/usage.py and in to individual
-  driver files.
-
-* Support "flat" build model where you can build a command and incorporate
-  everything from pycoreutils that you need in a single file.  A little more
-  portable for some systems.
+* Make sure error messages go to stderr.

@@ -57,8 +57,8 @@ def main():
 	elif a == '-s' or a == '--silent' or a == '--quiet':
 		sys.exit(posix.isatty(tty))
 	else:
-		print "%s: extra operand `%s'" % (prog, sys.argv[1],)
-		print "Try `%s --help' for more information." % (prog,)
+		sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[1],))
+		sys.stderr.write("Try `%s --help' for more information." % (prog,))
 		sys.exit(1)
 
 if __name__ == "__main__":

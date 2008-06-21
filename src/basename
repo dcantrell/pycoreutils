@@ -56,8 +56,8 @@ def main():
 		sys.exit(0)
 	else:
 		if len(sys.argv) > 3:
-			print "%s: extra operand `%s'" % (prog, sys.argv[len(sys.argv) - 1],)
-			print "Try `%s --help' for more information." % (prog,)
+			sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[len(sys.argv) - 1],))
+			sys.stderr.write("Try `%s --help' for more information." % (prog,))
 			sys.exit(1)
 		elif len(sys.argv) == 3:
 			print xbasename(sys.argv[1], suffix=sys.argv[2])

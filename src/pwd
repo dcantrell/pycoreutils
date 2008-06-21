@@ -46,8 +46,8 @@ def main():
 		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
 		sys.exit(0)
 	else:
-		print "%s: extra operand `%s'" % (prog, sys.argv[1],)
-		print "Try `%s --help' for more information." % (prog,)
+		sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[1],))
+		sys.stderr.write("Try `%s --help' for more information." % (prog,))
 		sys.exit(1)
 
 if __name__ == "__main__":

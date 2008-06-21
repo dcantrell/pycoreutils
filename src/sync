@@ -45,7 +45,7 @@ def main():
 		sys.exit(0)
 	else:
 		if len(sys.argv) > 1:
-			print "%s: ignoring all arguments" % (prog,)
+			sys.stderr.write("%s: ignoring all arguments" % (prog,))
 
 		pycoreutils.sync()
 		sys.exit(0)

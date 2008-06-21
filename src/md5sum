@@ -158,21 +158,21 @@ def main():
 		else:
 			helpstr = 'invalid option --'
 
-		print "%s: %s '%s'" % (prog, helpstr, sys.argv[1],)
-		print "Try `%s --help' for more information." % (prog,)
+		sys.stderr.write("%s: %s '%s'" % (prog, helpstr, sys.argv[1],))
+		sys.stderr.write("Try `%s --help' for more information." % (prog,))
 
 	if not binary and text and check:
-		print "the --binary and --text options are meaningless when verifying checksums"
+		sys.stderr.write("the --binary and --text options are meaningless when verifying checksums")
 		usage(prog)
 		sys.exit(1)
 
 	if status and not check:
-		print "the --status option is meaningful only when verifying checksums"
+		sys.stderr.write("the --status option is meaningful only when verifying checksums")
 		usage(prog)
 		sys.exit(1)
 
 	if warn and not check:
-		print "the --warn option is meaningful only when verifying checksums"
+		sys.stderr.write("the --warn option is meaningful only when verifying checksums")
 		usage(prog)
 		sys.exit(1)
 

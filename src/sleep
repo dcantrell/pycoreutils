@@ -74,7 +74,7 @@ def main():
 		rc = xsleep(sys.argv[1])
 
 		if rc == 1:
-			print "%s: invalid time interval `%s'" % (prog, sys.argv[1])
+			sys.stderr.write("%s: invalid time interval `%s'" % (prog, sys.argv[1]))
 			usage(prog)
 
 		sys.exit(rc)

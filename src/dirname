@@ -38,13 +38,13 @@ def main():
 	prog = os.path.basename(sys.argv[0])
 
 	if len(sys.argv) == 1:
-		print "%s: missing operand" % (prog,)
-		print "Try `%s --help' for more information." % (prog,)
+		sys.stderr.write("%s: missing operand" % (prog,))
+		sys.stderr.write("Try `%s --help' for more information." % (prog,))
 		sys.exit(1)
 
 	if len(sys.argv) >= 3:
-		print "%s: extra operand `%s'" % (prog, sys.argv[2],)
-		print "Try `%s --help' for more information." % (prog,)
+		sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[2],))
+		sys.stderr.write("Try `%s --help' for more information." % (prog,))
 		sys.exit(1)
 
 	if sys.argv[1] == "--help":
