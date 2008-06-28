@@ -199,6 +199,7 @@ def main():
 				continue
 
 			if mode == "field":
+				fieldcount = 0
 				tmpfields = line.split(delim)
 
 				for (s, e) in break_specification(specification):
@@ -207,7 +208,16 @@ def main():
 
 					i = s
 					while i <= e:
-						sys.stdout.write("%s%s" % (tmpfields[i], output_delim,))
+						if i >= len(tmpfields):
+							i += 1
+							continue
+						else:
+							if fieldcount >= 1:
+								sys.stdout.write("%s" % (output_delim,))
+
+							sys.stdout.write("%s" % (tmpfields[i],))
+							fieldcount += 1
+
 						i += 1
 
 				sys.stdout.write("\n")
