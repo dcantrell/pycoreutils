@@ -168,7 +168,7 @@ def main():
 	if only_delimited and mode != "field":
 		error_exit(prog, "suppressing non-delimited lines may only be used when operating on fields")
 
-	if mode == "field" and delim is None:
+	if delim is None:
 		delim = '\t'
 
 	if output_delim is None:
@@ -195,8 +195,9 @@ def main():
 		results = []
 
 		for line in inlines:
-			if line.find(delim) == -1 and only_delimited:
-				continue
+			if delim is not None:
+				if line.find(delim) == -1 and only_delimited:
+					continue
 
 			if mode == "field":
 				fieldcount = 0
