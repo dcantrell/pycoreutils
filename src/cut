@@ -61,14 +61,12 @@ def break_specification(specification):
 	ret = []
 
 	for spec in specification.split(','):
-		range = spec.split('-')
-
-		if range[0] != '':
-			range[0] = int(range[0]) - 1
-
-		if len(range) > 1:
-			if range[1] != '':
-				range[1] = int(range[1]) - 1
+		range = []
+		for pos in spec.split('-'):
+			if pos == '':
+				range.append(None)
+			else:
+				range.append(int(pos) - 1)
 
 		if len(range) == 1:
 			ret.append((range[0], range[0]))
@@ -223,13 +221,20 @@ def main():
 
 				sys.stdout.write("\n")
 			elif mode == "character" or mode == "byte":
+				first = 1
+
 				for (s, e) in break_specification(specification):
+					if first == 1:
+						first = 2
+					elif first == 2:
+						sys.stdout.write("%s" % (output_delim,))
+
 					if s is None:
-						sys.stdout.write("%s%s" % (line[:e], output_delim,))
+						sys.stdout.write("%s" % (line[:e],))
 					elif e is None:
-						sys.stdout.write("%s%s" % (line[s:], output_delim,))
+						sys.stdout.write("%s" % (line[s:],))
 					else:
-						sys.stdout.write("%s%s" % (line[s:e], output_delim,))
+						sys.stdout.write("%s" % (line[s:e],))
 
 				sys.stdout.write("\n")
 
