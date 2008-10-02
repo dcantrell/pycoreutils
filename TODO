@@ -1,3 +1,7 @@
+* Write Makefiles out completely
+      * make install
+      * packaging? (tarball, dmg, other?)
+
 * All of these commands:
     /bin/cat
     /bin/chgrp
