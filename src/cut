@@ -66,7 +66,10 @@ def break_specification(specification):
 			if pos == '':
 				range.append(None)
 			else:
-				range.append(int(pos) - 1)
+				range.append(int(pos))
+
+		if range[0] is not None:
+			range[0] -= 1
 
 		if len(range) == 1:
 			ret.append((range[0], range[0]))
