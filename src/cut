@@ -78,7 +78,7 @@ def break_specification(specification):
 		elif spec.endswith('-'):
 			ret.append((range[0], None))
 		else:
-			ret.append((range[0], range[1]))
+			ret.append((range[0], range[1] - 1))
 
 	return ret
 
