@@ -146,6 +146,9 @@ def main():
 					if output is not None:
 						sys.stdout.write(output)
 						i += 2
+				else:
+					sys.stdout.write(arg[i])
+					i += 1
 			else:
 				sys.stdout.write(arg[i])
 				i += 1
