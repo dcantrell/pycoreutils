@@ -1,0 +1,157 @@
+#!/usr/bin/env python -tt
+#
+# echo - echo(1) command written in Python
+# Copyright (C) 2008  David Cantrell <david.l.cantrell@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+
+import getopt
+import os
+import sys
+
+ver = (1, 0)
+
+def usage(cmd):
+	print "Usage: %s [OPTION... [STRING]..." % (cmd,)
+	print "Echo the STRING(s) to standard output.\n"
+	print "  -n             do not output the trailing newline"
+	print "  -e             enable interpretation of backslash escapes"
+	print "  -E             disable interpretation of backslash escapes (default)"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit\n"
+	print "If -e is in effect, the following sequences are recognized:\n"
+	print "  \\0NNN   the character whose ASCII code is NNN (octal)"
+	print "  \\\\      backslash"
+	print "  \\a      alert (BEL)"
+	print "  \\b      backspace"
+	print "  \\c      suppress trailing newline"
+	print "  \\f      form feed"
+	print "  \\n      new line"
+	print "  \\r      carriage return"
+	print "  \\t      horizontal tab"
+	print "  \\v      vertical tab\n"
+	print "NOTE: your shell may have its own version of echo, which usually supercedes"
+	print "the version described here.  Please refer to your shell's documentation"
+	print "for details about the options it supports."
+
+def error_exit(prog, errorstr):
+	sys.stderr.write("%s: %s\n" % (prog, errorstr,))
+	sys.stderr.write("Try `%s --help' for more information.\n" % (prog,))
+	sys.exit(1)
+
+def main():
+	prog = os.path.basename(sys.argv[0])
+	opts, args = [], []
+	process_options, newline, escapes = True, True, False
+	help, version, unknown = False, False, False
+
+	# only process options if the POSIXLY_CORRECT env var is not present
+	# or if the first argument specified is -n
+	# XXX: we do not do the DEFAULT_ECHO_TO_XPG like GNU because I don't
+	# know how to determine if we are on System V v9.  Could probably
+	# implement that by checking for os.name and then looking at /bin/sh
+	if os.getenv('POSIXLY_CORRECT') is not None:
+		process_options = False
+
+	if len(sys.argv) > 1:
+		if sys.argv[1] == '-n':
+			process_options = True
+
+	if process_options:
+		try:
+			opts, args = getopt.getopt(sys.argv[1:], "neE", ["help", "version"])
+		except getopt.GetoptError:
+			help = True
+
+		for o, a in opts:
+			if o in ("-n"):
+				newline = False
+			elif o in ("-e", "-E"):
+				escapes = True
+			elif o in ("--help"):
+				help = True
+			elif o in ("--version"):
+				version = True
+			else:
+				unknown = True
+
+		if help:
+			usage(prog)
+			sys.exit(1)
+		elif version:
+			print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+			sys.exit(0)
+		elif unknown:
+			if sys.argv[1].startswith('--'):
+				helpstr = "unrecognized option '%s'" % (sys.argv[1],)
+			else:
+				helpstr = "invalid option -- '%s'" % (sys.argv[1],)
+
+			error_exit(prog, helpstr)
+	else:
+		args = sys.argv[1:]
+
+	for arg in args:
+		i = 0
+		while i < len(arg):
+			if escapes:
+				if arg[i] == '\\':
+					type = arg[i+1].lower()
+					output = None
+
+					if type == '\\':
+						output = "\\"
+					elif type == 'a':
+						output = "\a"
+					elif type == 'b':
+						output = "\b"
+					elif type == 'c':
+						newline = False
+					elif type == 'f':
+						output = "\f"
+					elif type == 'n':
+						output = "\n"
+					elif type == 'r':
+						output = '\r'
+					elif type == 't':
+						output = '\t'
+					elif type == 'v':
+						output = '\v'
+					elif type == '0':
+						# convert octal character code
+						start = i + 2
+						end = i + 5
+						code = arg[start:end]
+						i += 5
+
+						try:
+							val = int(code)
+							sys.stdout.write("\%d" % (val,))
+						except ValueError:
+							sys.stdout.write(arg[i:i+5])
+
+					if output is not None:
+						sys.stdout.write(output)
+						i += 2
+			else:
+				sys.stdout.write(arg[i])
+				i += 1
+
+	if newline:
+		sys.stdout.write("\n")
+
+if __name__ == "__main__":
+	main()
