@@ -32,7 +32,6 @@
     /usr/bin/chcon
     /usr/bin/comm
     /usr/bin/csplit
-    /usr/bin/cut
     /usr/bin/dir
     /usr/bin/dircolors
     /usr/bin/du
