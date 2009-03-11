@@ -1,9 +1,9 @@
-PKG     = pycoreutils
-VER     = 0.1
+PKG     := pycoreutils
+VER     := 0.1
 
-REPO    = https://pycoreutils.googlecode.com/svn
+REPO    := https://pycoreutils.googlecode.com/svn
 
-DESTDIR = /usr/local
+DESTDIR ?= /usr/local
 
 all:
 	@echo "Available targets:"
@@ -12,6 +12,7 @@ all:
 	@echo "    tag          Tag repository as v$(VER)"
 	@echo "    dist-gzip    Generate a release archive ($(PKG)-$(VER).tar.gz)"
 	@echo "    release      Perform 'make tag && make dist-gzip'"
+	@echo "    dmg          Make a MacOS X pkg bundle and put it in a dmg file"
 
 changelog:
 	svn log > ChangeLog
@@ -26,6 +27,9 @@ dist-gzip:
 	@echo "WRITEME"
 
 release:
+	@echo "WRITEME"
+
+dmg:
 	@echo "WRITEME"
 
 clean:
