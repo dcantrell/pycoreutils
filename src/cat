@@ -1,0 +1,91 @@
+#!/usr/bin/env python -tt
+#
+# cat.py - cat(1) command written in Python
+# Copyright (C) 2009  James Bair <james.d.bair@gmail.com>
+#
+#         !!!STILL IN DEVELOPMENT - DO NOT USE!!!
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+
+import getopt
+import os
+import sys
+
+def usage():
+	"""
+	Usage output.
+	"""
+	print "Usage: %s [OPTION] [FILE]..." % (prog,)
+	print "Concatenate FILE(s), or standard input, to standard output."
+	print ""
+	print "  -A, --show-all           equivalent to -vET"
+	print "  -b, --number-nonblank    number nonempty output lines"
+	print "  -e                       equivalent to -vE"
+	print "  -E, --show-ends          display $ at end of each line"
+	print "  -n, --number             number all output lines"
+	print "  -s, --squeeze-blank      suppress repeated empty output lines"
+	print "  -t                       equivalent to -vT"
+	print "  -T, --show-tabs          display TAB characters as ^I"
+	print "  -u                       (ignored)"
+	print "  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB"
+	print "      --help     display this help and exit"
+	print "      --version  output version information and exit"
+	print ""
+	print "With no FILE, or when FILE is -, read standard input."
+	print ""
+	print "Examples:"
+	print "  cat f - g  Output f's contents, then standard input, then g's contents."
+	print "  cat        Copy standard input to standard output."
+	print ""
+	print "Report bugs to <bug-coreutils@gnu.org>."
+
+if __name__ == '__main__':
+
+	prog = os.path.basename(sys.argv[0])
+	opts, args = [], []
+
+	optString = "AbeEnstTuv"
+	optList = [ "show-all", "number-nonblank", "show-ends", "number", 
+		"squeeze-blank", "show-tabs", "show-nonprinting", "help", "version" ]
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], optString, optList)
+	
+	except getopt.GetoptError:
+		help = True
+
+	for o, a in opts:
+		if o in ('-A', '--show-all'):
+			showEnds = True
+			showNonPrinting = True	
+			showTabs = True
+		elif o in ('-b', '--number-nonblank'):
+			numberNonBlank = True
+		elif o in ('-e'):
+			showEnds = True
+			showNonPrinting = True	
+		elif o in ('-E', '--show-ends'):
+			showEnds = True
+		elif o in ('-n', '--number'):
+			numberLines = True
+		elif o in ('--help'):
+			help = True
+		elif o in ('--version'):
+			version = True
+		else:
+			Unknown = True
+
+	print 'Passed opts stuff.'
