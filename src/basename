@@ -24,47 +24,47 @@ import os
 import sys
 
 def usage(cmd):
-	print "Usage: %s NAME [SUFFIX]" % (cmd,)
-	print "   or: %s OPTION" % (cmd,)
-	print "Print NAME with any leading directory components removed."
-	print "If specified, also remove a trailing SUFFIX.\n"
-	print "      --help     display this help and exit"
-	print "      --version  output version information and exit\n"
-	print "Examples:"
-	print "  %s /usr/bin/sort       Output \"sort\"." % (cmd,)
-	print "  %s include/stdio.h .h  Output \"stdio\"." % (cmd,)
+    print "Usage: %s NAME [SUFFIX]" % (cmd,)
+    print "   or: %s OPTION" % (cmd,)
+    print "Print NAME with any leading directory components removed."
+    print "If specified, also remove a trailing SUFFIX.\n"
+    print "      --help     display this help and exit"
+    print "      --version  output version information and exit\n"
+    print "Examples:"
+    print "  %s /usr/bin/sort       Output \"sort\"." % (cmd,)
+    print "  %s include/stdio.h .h  Output \"stdio\"." % (cmd,)
 
 def xbasename(path, suffix=None):
-	base = os.path.basename(path)
+    base = os.path.basename(path)
 
-	if suffix is not None:
-		base = base.rstrip(suffix)
+    if suffix is not None:
+        base = base.rstrip(suffix)
 
-	return base
+    return base
 
 def main():
-	prog = xbasename(sys.argv[0])
+    prog = xbasename(sys.argv[0])
 
-	if len(sys.argv) == 1:
-		sys.exit(0)
+    if len(sys.argv) == 1:
+        sys.exit(0)
 
-	if sys.argv[1] == "--help":
-		usage(prog)
-		sys.exit(0)
-	elif sys.argv[1] == "--version":
-		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
-		sys.exit(0)
-	else:
-		if len(sys.argv) > 3:
-			sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[len(sys.argv) - 1],))
-			sys.stderr.write("Try `%s --help' for more information." % (prog,))
-			sys.exit(1)
-		elif len(sys.argv) == 3:
-			print xbasename(sys.argv[1], suffix=sys.argv[2])
-		else:
-			print xbasename(sys.argv[1])
+    if sys.argv[1] == "--help":
+        usage(prog)
+        sys.exit(0)
+    elif sys.argv[1] == "--version":
+        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.exit(0)
+    else:
+        if len(sys.argv) > 3:
+            sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[len(sys.argv) - 1],))
+            sys.stderr.write("Try `%s --help' for more information." % (prog,))
+            sys.exit(1)
+        elif len(sys.argv) == 3:
+            print xbasename(sys.argv[1], suffix=sys.argv[2])
+        else:
+            print xbasename(sys.argv[1])
 
-		sys.exit(0)
+        sys.exit(0)
 
 if __name__ == "__main__":
-	main()
+    main()

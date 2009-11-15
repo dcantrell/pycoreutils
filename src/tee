@@ -25,84 +25,84 @@ import os
 import sys
 
 def usage(cmd):
-	print "Usage: %s [OPTION]... [FILE]..." % (cmd,)
-	print "Copy standard input to each FILE, and also to standard output.\n"
-	print "      -a, --append"
-	print "                 append to the given FILEs, do not overwrite"
-	print "      -i, --ignore-interrupts"
-	print "                 ignore interrupt signals"
-	print "      --help     display this help and exit"
-	print "      --version  output version information and exit"
+    print "Usage: %s [OPTION]... [FILE]..." % (cmd,)
+    print "Copy standard input to each FILE, and also to standard output.\n"
+    print "      -a, --append"
+    print "                 append to the given FILEs, do not overwrite"
+    print "      -i, --ignore-interrupts"
+    print "                 ignore interrupt signals"
+    print "      --help     display this help and exit"
+    print "      --version  output version information and exit"
 
 def openfile((fname, append)):
-	mode = ("wb", "ab")[append]
-		
-	if fname == "-":
-		return sys.stdout
-	else:
-		f = None
-		try:
-			f = file(fname, mode, 0)
-		except IOError, ioe:
-			sys.stderr.write("tee: %s: %s\n" % (fname, ioe.strerror))
-		return f
+    mode = ("wb", "ab")[append]
+        
+    if fname == "-":
+        return sys.stdout
+    else:
+        f = None
+        try:
+            f = file(fname, mode, 0)
+        except IOError, ioe:
+            sys.stderr.write("tee: %s: %s\n" % (fname, ioe.strerror))
+        return f
 
 def xtee(files, append=False):
-	files = [(f, append) for f in files]
+    files = [(f, append) for f in files]
 
-	sys.stdin = os.fdopen(sys.stdin.fileno(), "rb", 0)
-	sys.stdout = os.fdopen(sys.stdout.fileno(), "wb", 0)
-	
-	openfiles = filter(None, map(openfile, files))
+    sys.stdin = os.fdopen(sys.stdin.fileno(), "rb", 0)
+    sys.stdout = os.fdopen(sys.stdout.fileno(), "wb", 0)
+    
+    openfiles = filter(None, map(openfile, files))
 
-	stdin_fd = sys.stdin.fileno()
+    stdin_fd = sys.stdin.fileno()
 
-	while True:
-		s = os.read(stdin_fd, 1024)
-		if s == "":
-			break
-		for f in openfiles:
-			f.write(s)
+    while True:
+        s = os.read(stdin_fd, 1024)
+        if s == "":
+            break
+        for f in openfiles:
+            f.write(s)
 
-	return 0
+    return 0
 
 def main():
-	prog = os.path.basename(sys.argv[0])
-	append, ignoreint = False, False
-	help, version = False, False
+    prog = os.path.basename(sys.argv[0])
+    append, ignoreint = False, False
+    help, version = False, False
 
-	opts, args = [], []
+    opts, args = [], []
 
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], "ai",
-		                           ["append", "ignore-interrupts",
-		                            "help", "version"])
-	except getopt.GetoptError:
-		help = True
-		
-	for o, a in opts:
-		if o in ("-a", "--append"):
-			append = True
-		elif o in ("-i", "--ignore-interrupts"):
-			ignoreint = True
-		elif o in ("--help"):
-			help = True
-		elif o in ("--version"):
-			version = True
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "ai",
+                                   ["append", "ignore-interrupts",
+                                    "help", "version"])
+    except getopt.GetoptError:
+        help = True
+        
+    for o, a in opts:
+        if o in ("-a", "--append"):
+            append = True
+        elif o in ("-i", "--ignore-interrupts"):
+            ignoreint = True
+        elif o in ("--help"):
+            help = True
+        elif o in ("--version"):
+            version = True
 
-	if help:
-		usage(prog)
-		sys.exit(0)
-	elif version:
-		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
-		sys.exit(0)
-	else:
-		if ignoreint:
-			import signal
-			signal.signal(signal.SIGINT, signal.SIG_IGN)
+    if help:
+        usage(prog)
+        sys.exit(0)
+    elif version:
+        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.exit(0)
+    else:
+        if ignoreint:
+            import signal
+            signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-		xtee(args + ['-'], append)
-		sys.exit(0)
+        xtee(args + ['-'], append)
+        sys.exit(0)
 
 if __name__ == "__main__":
-	main()
+    main()

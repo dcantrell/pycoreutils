@@ -24,48 +24,48 @@ import os
 import sys
 
 def usage(cmd):
-	print "Usage: %s [VARIABLE]..." % (cmd,)
-	print "   or: %s OPTION" % (cmd,)
-	print "If no environment VARIABLE specified, print them all.\n"
-	print "      --help     display this help and exit"
-	print "      --version  output version information and exit\n"
-	print "NOTE: your shell may have its own version of printenv, which usually supercedes"
-	print "the version described here.  Please refer to your shell's documentation"
-	print "for details about the options it supports."
+    print "Usage: %s [VARIABLE]..." % (cmd,)
+    print "   or: %s OPTION" % (cmd,)
+    print "If no environment VARIABLE specified, print them all.\n"
+    print "      --help     display this help and exit"
+    print "      --version  output version information and exit\n"
+    print "NOTE: your shell may have its own version of printenv, which usually supercedes"
+    print "the version described here.  Please refer to your shell's documentation"
+    print "for details about the options it supports."
 
 def xprintenv(var=None):
-	if var:
-		if os.environ.has_key(var):
-			return (os.environ[var], 0)
-		else:
-			return ("", 1)
-	else:
-		retval = ""
+    if var:
+        if os.environ.has_key(var):
+            return (os.environ[var], 0)
+        else:
+            return ("", 1)
+    else:
+        retval = ""
 
-		for (key, val) in os.environ.items()
-			retval += "%s=%s\n" % (key, val,)
+        for (key, val) in os.environ.items()
+            retval += "%s=%s\n" % (key, val,)
 
-		return (retval.rstrip(), 0)
+        return (retval.rstrip(), 0)
 
 def main():
-	prog = os.path.basename(sys.argv[0])
+    prog = os.path.basename(sys.argv[0])
 
-	if len(sys.argv) == 1:
-		(str, rc) = xprintenv()
-		print str
-		sys.exit(rc)
+    if len(sys.argv) == 1:
+        (str, rc) = xprintenv()
+        print str
+        sys.exit(rc)
 
-	if sys.argv[1] == "--help":
-		usage(prog)
-		sys.exit(0)
-	elif sys.argv[1] == "--version":
-		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
-		sys.exit(0)
-	else:
-		(str, rc) = xprintenv(sys.argv[1])
-		if str != "":
-			print str
-		sys.exit(rc)
+    if sys.argv[1] == "--help":
+        usage(prog)
+        sys.exit(0)
+    elif sys.argv[1] == "--version":
+        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.exit(0)
+    else:
+        (str, rc) = xprintenv(sys.argv[1])
+        if str != "":
+            print str
+        sys.exit(rc)
 
 if __name__ == "__main__":
-	main()
+    main()

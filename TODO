@@ -1,6 +1,7 @@
 * Write Makefiles out completely
       * make install
       * packaging? (tarball, dmg, other?)
+      * Can we just use python disttools?
 
 * All of these commands:
     /bin/cat

@@ -1,7 +1,7 @@
 PKG     := pycoreutils
 VER     := 0.1
 
-REPO    := https://pycoreutils.googlecode.com/svn
+REPO    := http://github.com/dcantrell/pycoreutils
 
 DESTDIR ?= /usr/local
 
@@ -15,7 +15,7 @@ all:
 	@echo "    dmg          Make a MacOS X pkg bundle and put it in a dmg file"
 
 changelog:
-	svn log > ChangeLog
+	git log > ChangeLog
 
 install:
 	@echo "WRITEME"

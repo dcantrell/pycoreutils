@@ -27,183 +27,183 @@ import sys
 ver = (1, 0)
 
 def usage(cmd):
-	print "Usage: %s [OPTION] [FILE]..." % (cmd,)
-	print "Print or check MD5 (128-but) checksums."
-	print "With no FILE, or when FILE is -, read standard input.\n"
-	print "  -b, --binary            read in binary mode"
-	print "  -c, --check             read MD5 sums from the FILEs and check them"
-	print "  -t, --text              read in text mode (default)\n"
-	print "The following two options are useful only when verifying checksums:"
-	print "      --status            don't output anything, status code shows success"
-	print "  -w, --warn              warn about improperly formatted checksum lines\n"
-	print "      --help     display this help and exit"
-	print "      --version  output version information and exit\n"
-	print "The sums are computed as described in FIPS-180-1.  When checking, the input"
-	print "should be a former output of this program.  The default mode is to print"
-	print "a line with checksum, a character indicating type (`*' for binary, ` ' for"
-	print "text), and name for each FILE."
+    print "Usage: %s [OPTION] [FILE]..." % (cmd,)
+    print "Print or check MD5 (128-but) checksums."
+    print "With no FILE, or when FILE is -, read standard input.\n"
+    print "  -b, --binary            read in binary mode"
+    print "  -c, --check             read MD5 sums from the FILEs and check them"
+    print "  -t, --text              read in text mode (default)\n"
+    print "The following two options are useful only when verifying checksums:"
+    print "      --status            don't output anything, status code shows success"
+    print "  -w, --warn              warn about improperly formatted checksum lines\n"
+    print "      --help     display this help and exit"
+    print "      --version  output version information and exit\n"
+    print "The sums are computed as described in FIPS-180-1.  When checking, the input"
+    print "should be a former output of this program.  The default mode is to print"
+    print "a line with checksum, a character indicating type (`*' for binary, ` ' for"
+    print "text), and name for each FILE."
 
 def check_digest(sumfile, statusonly=False):
-	ret = True
+    ret = True
 
-	try:
-		if sumfile == '-':
-			fd = open(sys.stdin, 'r')
-		else:
-			if not os.path.isfile(sumfile):
-				sys.stderr.write("ERROR: %s does not exist\n" % (sumfile,))
-				return False
+    try:
+        if sumfile == '-':
+            fd = open(sys.stdin, 'r')
+        else:
+            if not os.path.isfile(sumfile):
+                sys.stderr.write("ERROR: %s does not exist\n" % (sumfile,))
+                return False
 
-			fd = open(os.path.realpath(sumfile), 'r')
-	except IOError, e:
-		sys.stderr.write("%s: %s: %s\n" % (os.path.basename(sys.argv[0]), sumfile, os.strerror(e.errno),))
-		return False
+            fd = open(os.path.realpath(sumfile), 'r')
+    except IOError, e:
+        sys.stderr.write("%s: %s: %s\n" % (os.path.basename(sys.argv[0]), sumfile, os.strerror(e.errno),))
+        return False
 
-	lines = map(lambda e: e.strip(), fd.readlines())
-	fd.close()
+    lines = map(lambda e: e.strip(), fd.readlines())
+    fd.close()
 
-	for line in lines:
-		if pair[32:34] == ' *':
-			binary = True
-		else:
-			binary = False
+    for line in lines:
+        if pair[32:34] == ' *':
+            binary = True
+        else:
+            binary = False
 
-		digest = pair[:32]
-		filename = pair[34:]
+        digest = pair[:32]
+        filename = pair[34:]
 
-		(calcret, calcdigest) = calc_digest(filename, binary=binary)
+        (calcret, calcdigest) = calc_digest(filename, binary=binary)
 
-		if calcret and digest == calcdigest:
-			if not statusonly:
-				print "%s: OK" % (filename,)
-		else:
-			ret = False
+        if calcret and digest == calcdigest:
+            if not statusonly:
+                print "%s: OK" % (filename,)
+        else:
+            ret = False
 
-	return ret
+    return ret
 
 def calc_digest(filename, binary=False):
-	ret = True
+    ret = True
 
-	if filename == '-':
-		fd = sys.stdin
-	else:
-		if not os.path.isfile(filename):
-			print "%s: No such file" % (filename,)
-			ret = False
-			return ''
+    if filename == '-':
+        fd = sys.stdin
+    else:
+        if not os.path.isfile(filename):
+            print "%s: No such file" % (filename,)
+            ret = False
+            return ''
 
-	try:
-		if binary:
-			fd = file(filename, 'rb')
-		else:
-			fd = file(filename, 'r')
-	except:
-		print "Unable to open %s" % (filename,)
-		ret = False
-		return (ret, '')
+    try:
+        if binary:
+            fd = file(filename, 'rb')
+        else:
+            fd = file(filename, 'r')
+    except:
+        print "Unable to open %s" % (filename,)
+        ret = False
+        return (ret, '')
 
-	calc = sha.new()
-	calc.update(fd.read())
-	fd.close()
+    calc = sha.new()
+    calc.update(fd.read())
+    fd.close()
 
-	return (ret, calc.hexdigest())
+    return (ret, calc.hexdigest())
 
 def main():
-	prog = os.path.basename(sys.argv[0])
-	opts, args = [], []
-	status, help, version, unknown = False, False, False, False
-	binary, check, text, warn = False, False, False, False
-	ret = True
-	type = ' '
-	digestHexBytes = (160 / 4)
-	minDigestLineLength = digestHexBytes + 3
+    prog = os.path.basename(sys.argv[0])
+    opts, args = [], []
+    status, help, version, unknown = False, False, False, False
+    binary, check, text, warn = False, False, False, False
+    ret = True
+    type = ' '
+    digestHexBytes = (160 / 4)
+    minDigestLineLength = digestHexBytes + 3
 
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], "bctw",
-		                           ["binary", "check", "text",
-		                            "status", "warn", "help",
-		                            "version"])
-	except getopt.GetoptError:
-		help = True
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "bctw",
+                                   ["binary", "check", "text",
+                                    "status", "warn", "help",
+                                    "version"])
+    except getopt.GetoptError:
+        help = True
 
-	for o, a in opts:
-		if o in ("-b", "--binary"):
-			binary = True
-			type = '*'
-		elif o in ("-c", "--check"):
-			check = True
-		elif o in ("-t", "--text"):
-			text = True
-		elif o in ("--status"):
-			status = True
-			warn = False
-		elif o in ("-w", "--warn"):
-			warn = True
-		elif o in ("--help"):
-			help = True
-		elif o in ("--version"):
-			version = True
-		else:
-			unknown = True
+    for o, a in opts:
+        if o in ("-b", "--binary"):
+            binary = True
+            type = '*'
+        elif o in ("-c", "--check"):
+            check = True
+        elif o in ("-t", "--text"):
+            text = True
+        elif o in ("--status"):
+            status = True
+            warn = False
+        elif o in ("-w", "--warn"):
+            warn = True
+        elif o in ("--help"):
+            help = True
+        elif o in ("--version"):
+            version = True
+        else:
+            unknown = True
 
-	if help:
-		usage(prog)
-		sys.exit(1)
-	elif version:
-		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
-		sys.exit(0)
-	elif unknown:
-		if sys.argv[1].startswith('--'):
-			helpstr = 'unrecognized option'
-		else:
-			helpstr = 'invalid option --'
+    if help:
+        usage(prog)
+        sys.exit(1)
+    elif version:
+        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.exit(0)
+    elif unknown:
+        if sys.argv[1].startswith('--'):
+            helpstr = 'unrecognized option'
+        else:
+            helpstr = 'invalid option --'
 
-		sys.stderr.write("%s: %s '%s'" % (prog, helpstr, sys.argv[1],))
-		sys.stderr.write("Try `%s --help' for more information." % (prog,))
+        sys.stderr.write("%s: %s '%s'" % (prog, helpstr, sys.argv[1],))
+        sys.stderr.write("Try `%s --help' for more information." % (prog,))
 
-	if not binary and text and check:
-		sys.stderr.write("the --binary and --text options are meaningless when verifying checksums")
-		usage(prog)
-		sys.exit(1)
+    if not binary and text and check:
+        sys.stderr.write("the --binary and --text options are meaningless when verifying checksums")
+        usage(prog)
+        sys.exit(1)
 
-	if status and not check:
-		sys.stderr.write("the --status option is meaningful only when verifying checksums")
-		usage(prog)
-		sys.exit(1)
+    if status and not check:
+        sys.stderr.write("the --status option is meaningful only when verifying checksums")
+        usage(prog)
+        sys.exit(1)
 
-	if warn and not check:
-		sys.stderr.write("the --warn option is meaningful only when verifying checksums")
-		usage(prog)
-		sys.exit(1)
+    if warn and not check:
+        sys.stderr.write("the --warn option is meaningful only when verifying checksums")
+        usage(prog)
+        sys.exit(1)
 
-	if args == []:
-		args.append('-')
+    if args == []:
+        args.append('-')
 
-	for arg in args:
-		sublist = glob.glob(arg)
+    for arg in args:
+        sublist = glob.glob(arg)
 
-		for subarg in sublist:
-			if check:
-				ret &= check_digest(subarg, statusonly=status)
-			else:
-				(calcret, digest) = calc_digest(subarg,
-				                                binary=binary)
-				ret &= calcret
+        for subarg in sublist:
+            if check:
+                ret &= check_digest(subarg, statusonly=status)
+            else:
+                (calcret, digest) = calc_digest(subarg,
+                                                binary=binary)
+                ret &= calcret
 
-				# output a leading backslash if the name
-				# contains a newline or backslash
-				if subarg.find('\\') != -1 or \
-				   subarg.find('\n') != -1:
-					sys.stdout.write("\\")
+                # output a leading backslash if the name
+                # contains a newline or backslash
+                if subarg.find('\\') != -1 or \
+                   subarg.find('\n') != -1:
+                    sys.stdout.write("\\")
 
-				# convert each newline in the filename to "\\n"
-				# and each backslash to "\\\\"
-				subarg = subarg.replace('\n', '\\n')
-				subarg = subarg.replace('\\', '\\\\')
+                # convert each newline in the filename to "\\n"
+                # and each backslash to "\\\\"
+                subarg = subarg.replace('\n', '\\n')
+                subarg = subarg.replace('\\', '\\\\')
 
-				print "%32s %s%s" % (digest, type, subarg,)
+                print "%32s %s%s" % (digest, type, subarg,)
 
-	sys.exit(not int(ret))
+    sys.exit(not int(ret))
 
 if __name__ == "__main__":
-	main()
+    main()

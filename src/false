@@ -23,7 +23,7 @@ ver = (2, 0)
 import sys
 
 def main():
-	sys.exit(not False)
+    sys.exit(not False)
 
 if __name__ == "__main__":
-	main()
+    main()

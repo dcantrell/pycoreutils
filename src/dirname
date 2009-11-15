@@ -24,41 +24,41 @@ import os
 import sys
 
 def usage(cmd):
-	print "Usage: %s NAME" % (cmd,)
-	print "   or: %s OPTION" % (cmd,)
-	print "Print NAME with its trailing /component removed; if NAME contains no /'s,"
-	print "output `.' (meaning the current directory).\n"
-	print "      --help     display this help and exit"
-	print "      --version  output version information and exit\n"
-	print "Examples:"
-	print "  %s /usr/bin/sort  Output \"/usr/bin\"." % (cmd,)
-	print "  %s stdio.h        Output \".\"." % (cmd,)
+    print "Usage: %s NAME" % (cmd,)
+    print "   or: %s OPTION" % (cmd,)
+    print "Print NAME with its trailing /component removed; if NAME contains no /'s,"
+    print "output `.' (meaning the current directory).\n"
+    print "      --help     display this help and exit"
+    print "      --version  output version information and exit\n"
+    print "Examples:"
+    print "  %s /usr/bin/sort  Output \"/usr/bin\"." % (cmd,)
+    print "  %s stdio.h        Output \".\"." % (cmd,)
 
 def main():
-	prog = os.path.basename(sys.argv[0])
+    prog = os.path.basename(sys.argv[0])
 
-	if len(sys.argv) == 1:
-		sys.stderr.write("%s: missing operand" % (prog,))
-		sys.stderr.write("Try `%s --help' for more information." % (prog,))
-		sys.exit(1)
+    if len(sys.argv) == 1:
+        sys.stderr.write("%s: missing operand" % (prog,))
+        sys.stderr.write("Try `%s --help' for more information." % (prog,))
+        sys.exit(1)
 
-	if len(sys.argv) >= 3:
-		sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[2],))
-		sys.stderr.write("Try `%s --help' for more information." % (prog,))
-		sys.exit(1)
+    if len(sys.argv) >= 3:
+        sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[2],))
+        sys.stderr.write("Try `%s --help' for more information." % (prog,))
+        sys.exit(1)
 
-	if sys.argv[1] == "--help":
-		usage(prog)
-		sys.exit(0)
-	elif sys.argv[1] == "--version":
-		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
-		sys.exit(0)
-	else:
-		ret = os.path.dirname(sys.arg[1])
-		if ret == '':
-			ret = '.'
-		print ret
-		sys.exit(0)
+    if sys.argv[1] == "--help":
+        usage(prog)
+        sys.exit(0)
+    elif sys.argv[1] == "--version":
+        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.exit(0)
+    else:
+        ret = os.path.dirname(sys.arg[1])
+        if ret == '':
+            ret = '.'
+        print ret
+        sys.exit(0)
 
 if __name__ == "__main__":
-	main()
+    main()

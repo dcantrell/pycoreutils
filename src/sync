@@ -25,30 +25,30 @@ import pycoreutils
 import sys
 
 def usage(cmd):
-	print "Usage: %s [OPTION]" % (cmd,)
-	print "Force changed blocks to disk, update the super block.\n"
-	print "      --help     display this help and exit"
-	print "      --version  output version information and exit"
+    print "Usage: %s [OPTION]" % (cmd,)
+    print "Force changed blocks to disk, update the super block.\n"
+    print "      --help     display this help and exit"
+    print "      --version  output version information and exit"
 
 def main():
-	prog = os.path.basename(sys.argv[0])
+    prog = os.path.basename(sys.argv[0])
 
-	if len(sys.argv) == 1:
-		pycoreutils.sync()
-		sys.exit(0)
+    if len(sys.argv) == 1:
+        pycoreutils.sync()
+        sys.exit(0)
 
-	if sys.argv[1] == "--help":
-		usage(prog)
-		sys.exit(0)
-	elif sys.argv[1] == "--version":
-		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
-		sys.exit(0)
-	else:
-		if len(sys.argv) > 1:
-			sys.stderr.write("%s: ignoring all arguments" % (prog,))
+    if sys.argv[1] == "--help":
+        usage(prog)
+        sys.exit(0)
+    elif sys.argv[1] == "--version":
+        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.exit(0)
+    else:
+        if len(sys.argv) > 1:
+            sys.stderr.write("%s: ignoring all arguments" % (prog,))
 
-		pycoreutils.sync()
-		sys.exit(0)
+        pycoreutils.sync()
+        sys.exit(0)
 
 if __name__ == "__main__":
-	main()
+    main()

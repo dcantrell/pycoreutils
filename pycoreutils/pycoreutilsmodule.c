@@ -22,32 +22,32 @@
 #include <unistd.h>
 
 static PyObject *hostid_cmd(PyObject *self, PyObject *args) {
-	unsigned int id;
-	char ret[9];
+    unsigned int id;
+    char ret[9];
 
-	id = gethostid();
-	id &= 0xffffffff;
-	if (sprintf(ret, "%08x", id) < 0)
-		return NULL;
+    id = gethostid();
+    id &= 0xffffffff;
+    if (sprintf(ret, "%08x", id) < 0)
+        return NULL;
 
-	return Py_BuildValue("s", ret);
+    return Py_BuildValue("s", ret);
 }
 
 static PyObject *sync_cmd(PyObject *self, PyObject *args) {
-	sync();
-	Py_INCREF(Py_None);
-	return Py_None;
+    sync();
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyMethodDef pycoreutilsMethods[] = {
-	{ "hostid", (PyCFunction) hostid_cmd, METH_VARARGS, NULL },
-	{ "sync", (PyCFunction) sync_cmd, METH_VARARGS, NULL },
-	{ NULL, NULL, 0, NULL }
+    { "hostid", (PyCFunction) hostid_cmd, METH_VARARGS, NULL },
+    { "sync", (PyCFunction) sync_cmd, METH_VARARGS, NULL },
+    { NULL, NULL, 0, NULL }
 };
 
 void initpycoreutils(void) {
-	PyObject *m, *d;
+    PyObject *m, *d;
 
-	m = Py_InitModule("pycoreutils", pycoreutilsMethods);
-	d = PyModule_GetDict(m);
+    m = Py_InitModule("pycoreutils", pycoreutilsMethods);
+    d = PyModule_GetDict(m);
 }

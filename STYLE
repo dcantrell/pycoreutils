@@ -20,7 +20,7 @@ Style
    Please follow the same style that has been followed for the other
    scripts.
 
-   * We use tab characters for indentation, not spaces.
+   * We use 4 spaces for indentation, not tabs.
    * The #! interpreter is to be '/usr/bin/env python -tt'
    * Each .py file has a GPL boilerplate at the top with the name of
      the author (you).

@@ -29,10 +29,10 @@ from stat import *
 
 # only offer SELinux if we have that Python module
 try:
-	import selinux
-	useSELinux = True
+    import selinux
+    useSELinux = True
 except:
-	useSELinux = False
+    useSELinux = False
 
 usermasks = { 'a' : 07777,
               'u' : S_ISUID | S_IRWXU,
@@ -50,68 +50,68 @@ usermods = { 'u' : (S_IRWXU, 6),
              'o' : (S_IRWXO, 0), }
 
 def mask_and_extend(startmode, mask, shift):
-	t = (startmode & mask) >> shift
-	return t << 6 | t << 3 | t
+    t = (startmode & mask) >> shift
+    return t << 6 | t << 3 | t
 
 def apply_permmod(app, mask, startmode, c):
-	if c in permmods:
-		app |= mask & permmods[c]
-	elif c == 'X' and (startmode & permmods['x']):
-		app |= mask & permmods['x']
-	elif c in usermods:
-		app |= mask & mask_and_extend(startmode, *usermods[c])
-	else:
-		raise ValueError
-	return app
+    if c in permmods:
+        app |= mask & permmods[c]
+    elif c == 'X' and (startmode & permmods['x']):
+        app |= mask & permmods['x']
+    elif c in usermods:
+        app |= mask & mask_and_extend(startmode, *usermods[c])
+    else:
+        raise ValueError
+    return app
 
 def apply_mod(s, startmode, umask):
-	m = re.compile("[+-=]").search(s)
-	users, ops = s[0:m.start()], s[m.start():]
-	mods = re.compile("[+-=][rwxXstugo]*").findall(ops)
-	um = [usermasks[c] for c in list(users)]
-	# this mask defines the scope of the series of operations
-	mask = reduce(lambda x, y: x | y, um, 0)
-	if um == []:
-		mask = 07777 & ~umask
+    m = re.compile("[+-=]").search(s)
+    users, ops = s[0:m.start()], s[m.start():]
+    mods = re.compile("[+-=][rwxXstugo]*").findall(ops)
+    um = [usermasks[c] for c in list(users)]
+    # this mask defines the scope of the series of operations
+    mask = reduce(lambda x, y: x | y, um, 0)
+    if um == []:
+        mask = 07777 & ~umask
 
-	result = startmode
-	for m in mods:
-		app = 0
-		for c in m[1:]:
-			app = apply_permmod(app, mask, startmode, c)
-		if m[0] == '+':
-			result |= app
-		elif m[0] == '-':
-			result &= ~app
-		else:
-			result &= ~mask
-			result |= app
+    result = startmode
+    for m in mods:
+        app = 0
+        for c in m[1:]:
+            app = apply_permmod(app, mask, startmode, c)
+        if m[0] == '+':
+            result |= app
+        elif m[0] == '-':
+            result &= ~app
+        else:
+            result &= ~mask
+            result |= app
 
-	return result
+    return result
 
 def parse_symbolic_mode(mode, umask):
-	mlist = mode.split(',')
-	try:
-		mask = reduce(lambda x, y: apply_mod(y, x, umask), mlist, 0777)
-	except:
-		raise
+    mlist = mode.split(',')
+    try:
+        mask = reduce(lambda x, y: apply_mod(y, x, umask), mlist, 0777)
+    except:
+        raise
 
-	print mask
-	return mask
+    print mask
+    return mask
 
 def parse_mode(mode, mask):
-	raw_mode = None
-	try:
-		raw_mode = int(mode, 8)
-	except ValueError:
-		# not numeric, try symbolic
-		raw_mode = parse_symbolic_mode(mode, mask)
+    raw_mode = None
+    try:
+        raw_mode = int(mode, 8)
+    except ValueError:
+        # not numeric, try symbolic
+        raw_mode = parse_symbolic_mode(mode, mask)
 
-	if not raw_mode:
-		sys.stderr.write("mkdir: invalid mode `%s'\n" % mode)
-		sys.exit(1)
+    if not raw_mode:
+        sys.stderr.write("mkdir: invalid mode `%s'\n" % mode)
+        sys.exit(1)
 
-	return raw_mode
+    return raw_mode
 
 # the majority of this is taken from os.makedirs, but we can't simply
 # call os.makedirs, because GNU mkdir permission semantics are
@@ -120,115 +120,115 @@ def parse_mode(mode, mask):
 # GNU mkdir has the --verbose option to print out the name of each
 # newly created directory
 def makewithparents(name, mode, mask, verbose=False, innercall=False):
-	rv = 0
-	if not innercall:
-		leaf_node = mode
-		mode = 0777 & ~mask | S_IWUSR | S_IXUSR
-	head, tail = os.path.split(name)
-	if not tail:
-		head, tail = os.path.split(head)
-	if head and tail and not os.path.exists(head):
-		rv = makewithparents(head, mode, mask, verbose, True)
-		if tail == os.curdir:
-			return 0
-	if not innercall:
-		mode = leaf_mode
-	rv |= makeonedir(name, mode, mask, verbose, True)
-	return rv
+    rv = 0
+    if not innercall:
+        leaf_node = mode
+        mode = 0777 & ~mask | S_IWUSR | S_IXUSR
+    head, tail = os.path.split(name)
+    if not tail:
+        head, tail = os.path.split(head)
+    if head and tail and not os.path.exists(head):
+        rv = makewithparents(head, mode, mask, verbose, True)
+        if tail == os.curdir:
+            return 0
+    if not innercall:
+        mode = leaf_mode
+    rv |= makeonedir(name, mode, mask, verbose, True)
+    return rv
 
 def makeonedir(d, mode, mask, verbose=False, parent=False):
-	try:
-		if parent and os.path.exists(d):
-			if os.path.isdir(d):
-				return 0
-			elif os.path.isfile(d):
-				sys.stderr.write("mkdir: `%s' exists "
-				                 "but is not a directory\n" % d)
-				return 1
-		os.mkdir(d, mode)
-		if verbose:
-			print "mkdir: created directory `%s'" % d
-		return 0
-	except OSError, o:
-		sys.stderr.write("mkdir: cannot create directory `%s': %s\n"
-		                 % (d, o.strerror))
-		return 1
+    try:
+        if parent and os.path.exists(d):
+            if os.path.isdir(d):
+                return 0
+            elif os.path.isfile(d):
+                sys.stderr.write("mkdir: `%s' exists "
+                                 "but is not a directory\n" % d)
+                return 1
+        os.mkdir(d, mode)
+        if verbose:
+            print "mkdir: created directory `%s'" % d
+        return 0
+    except OSError, o:
+        sys.stderr.write("mkdir: cannot create directory `%s': %s\n"
+                         % (d, o.strerror))
+        return 1
 
 def xmkdir(dirlist, mode, parents=False, verbose=False, con=None):
-	ret = 0
+    ret = 0
 
-	if con is not None and useSELinux is True:
-		selinux.setcon(con)
+    if con is not None and useSELinux is True:
+        selinux.setcon(con)
 
-	mask = os.umask(0)
-	if not mode:
-		mode = 0777 & ~mask
-	else:
-		mode = parse_mode(mode, mask)
+    mask = os.umask(0)
+    if not mode:
+        mode = 0777 & ~mask
+    else:
+        mode = parse_mode(mode, mask)
 
-	for d in dirlist:
-		rv = (makeonedir, makewithparents)[parents](d, mode, mask, verbose)
-		ret |= rv
+    for d in dirlist:
+        rv = (makeonedir, makewithparents)[parents](d, mode, mask, verbose)
+        ret |= rv
 
-	return ret
+    return ret
 
 def usage(cmd):
-	print "Usage: %s [OPTION] DIRECTORY..." % (cmd,)
-	print "Create the DIRECTORY(ies), if they do not already exist.\n"
-	print "      -m, --mode=MODE"
-	print "                 set permission mode (as in chmod), not rwxrwxrwx - umask"
-	print "      -p, --parents"
-	print "                 no error if existing, make parent directories as needed"
-	print "      -v, --verbose"
-	print "                 print a message for each created directory"
+    print "Usage: %s [OPTION] DIRECTORY..." % (cmd,)
+    print "Create the DIRECTORY(ies), if they do not already exist.\n"
+    print "      -m, --mode=MODE"
+    print "                 set permission mode (as in chmod), not rwxrwxrwx - umask"
+    print "      -p, --parents"
+    print "                 no error if existing, make parent directories as needed"
+    print "      -v, --verbose"
+    print "                 print a message for each created directory"
 
-	if useSELinux is True:
-		print "      -Z, --context=CONTEXT"
-		print "                 set the SELinux security context of each created"
-		print "                 directory to CONTEXT"
+    if useSELinux is True:
+        print "      -Z, --context=CONTEXT"
+        print "                 set the SELinux security context of each created"
+        print "                 directory to CONTEXT"
 
-	print "      --help     display this help and exit"
-	print "      --version  output version information and exit"
+    print "      --help     display this help and exit"
+    print "      --version  output version information and exit"
 
 def main():
-	prog = os.path.basename(sys.argv[0])
-	con = None
-	mode = None
-	parents, verbose = False, False
-	help, version = False, False
+    prog = os.path.basename(sys.argv[0])
+    con = None
+    mode = None
+    parents, verbose = False, False
+    help, version = False, False
 
-	opts, args = [], []
+    opts, args = [], []
 
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], "Zm:pv",
-		                           ["context=", "mode=", "parents",
-		                            "verbose", "help", "version"])
-	except getopt.GetoptError:
-		help = True
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "Zm:pv",
+                                   ["context=", "mode=", "parents",
+                                    "verbose", "help", "version"])
+    except getopt.GetoptError:
+        help = True
                 
-	for o, a in opts:
-		if o in ("-Z", "--context") and useSELinux is True:
-			context = a
-		elif o in ("-m", "--mode"):
-			mode = a
-		elif o in ("-p", "--parents"):
-			parents = True
-		elif o in ("-v", "--verbose"):
-			verbose = True
-		elif o in ("--help"):
-			help = True
-		elif o in ("--version"):
-			version = True
+    for o, a in opts:
+        if o in ("-Z", "--context") and useSELinux is True:
+            context = a
+        elif o in ("-m", "--mode"):
+            mode = a
+        elif o in ("-p", "--parents"):
+            parents = True
+        elif o in ("-v", "--verbose"):
+            verbose = True
+        elif o in ("--help"):
+            help = True
+        elif o in ("--version"):
+            version = True
 
-	if len(args) == 0 or help:
-		usage(prog)
-		sys.exit(0)
-	elif version:
-		print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
-		sys.exit(0)
-	else:
-		ret = xmkdir(args, mode, parents, verbose, con=context)
-		sys.exit(ret)
+    if len(args) == 0 or help:
+        usage(prog)
+        sys.exit(0)
+    elif version:
+        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.exit(0)
+    else:
+        ret = xmkdir(args, mode, parents, verbose, con=context)
+        sys.exit(ret)
 
 if __name__ == "__main__":
-	main()
+    main()
