@@ -123,7 +123,9 @@ if __name__ == '__main__':
 			needHelp = True
 		elif o in ('--version'):
 			showVersion = True
-		else:
+		else: 	# Technically we won't get here I don't think
+			# getopt will fail to get any non-specified options.
+			# Need to capture/handle the else at the exception level.
 			if o.startswith('--'):
 				helpstr = "unrecognized option '%s'" % (o,)
 			else:
