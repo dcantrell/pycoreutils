@@ -1,4 +1,4 @@
-#!/usr/bin/env python -tt
+#!/usr/bin/env python
 #
 # cat.py - cat(1) command written in Python
 # Copyright (C) 2009  James Bair <james.d.bair@gmail.com>
@@ -26,7 +26,8 @@ import sys
 
 def usage():
 	"""
-	Usage output.
+	Usage output. Last line changed to my email since clearly they're
+	not going to want bug reports from cat.py
 	"""
 	print "Usage: %s [OPTION] [FILE]..." % (prog,)
 	print "Concatenate FILE(s), or standard input, to standard output."
@@ -50,28 +51,54 @@ def usage():
 	print "  cat f - g  Output f's contents, then standard input, then g's contents."
 	print "  cat        Copy standard input to standard output."
 	print ""
-	print "Report bugs to <bug-coreutils@gnu.org>."
+	print "Report bugs to <james.d.bair@gmail.com>."
+
+def version():
+	"""
+	Function to return our version. Output does not match coreutils' due to
+	the version/authors clearly not matching.
+	"""
+	print "cat (pycoreutils) %d.%d" % (ver[0], ver[1])
+	print "Copyright (C) 2009 James Bair"
+	print "License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>"
+	print "This is free software: you are free to change and redistribute it."
+	print "There is NO WARRANTY, to the extent permitted by law."
+	print ""
+	print "Originally written by Torbjorn Granlund and Richard M. Stallman."
+	print "Written in Python by James Bair."
 
 if __name__ == '__main__':
 
 	prog = os.path.basename(sys.argv[0])
+	ver = (0, 1)
 	opts, args = [], []
 
 	optString = "AbeEnstTuv"
 	optList = [ "show-all", "number-nonblank", "show-ends", "number", 
 		"squeeze-blank", "show-tabs", "show-nonprinting", "help", "version" ]
 
+	# Declare everything as false to start
+	needHelp = False
+	showEnds = False
+	showTabs = False
+	showNonPrinting = False
+	numberNonBlank = False
+	numberLines = False
+	squeezeBlank = False
+	showVersion = False
+
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], optString, optList)
 	
-	except getopt.GetoptError:
-		help = True
+	except getopt.GetoptError, e:
+		unknown = True
+		print e
 
 	for o, a in opts:
 		if o in ('-A', '--show-all'):
 			showEnds = True
-			showNonPrinting = True	
 			showTabs = True
+			showNonPrinting = True
 		elif o in ('-b', '--number-nonblank'):
 			numberNonBlank = True
 		elif o in ('-e'):
@@ -81,11 +108,34 @@ if __name__ == '__main__':
 			showEnds = True
 		elif o in ('-n', '--number'):
 			numberLines = True
+		elif o in ('-s', '--squeeze-blank'):
+			squeezeBlank = True
+		elif o in ('-t'):
+			showTabs = True
+			showNonPrinting = True
+		elif o in ('-T', '--show-tabs'):
+			showTabs = True
+		elif o in ('-u'):
+			pass # or continue?
+		elif o in (' -v', '--show-nonprinting'):
+			showNonPrinting = True
 		elif o in ('--help'):
-			help = True
+			needHelp = True
 		elif o in ('--version'):
-			version = True
+			showVersion = True
 		else:
-			Unknown = True
+			if o.startswith('--'):
+				helpstr = "unrecognized option '%s'" % (o,)
+			else:
+				helpstr = "invalid option -- '%s'" % (o,)
 
-	print 'Passed opts stuff.'
+			sys.stderr.write("%s: %s\n" % (prog, helpstr,))
+			sys.stderr.write("Try `%s --help' for more information.\n" % (prog,))
+			sys.exit(1)
+
+	if needHelp:
+		usage()
+		sys.exit(0)
+	elif showVersion:
+		version()
+		sys.exit(0)
