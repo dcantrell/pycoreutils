@@ -1,7 +1,7 @@
-#!/usr/bin/env python -tt
+#!/usr/bin/python -tt
 #
-# uname.py - uname(1) command written in Python
-# Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
+# uname - uname(1) command written in Python
+# Copyright (C) 2007, 2008, 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,20 +26,25 @@ import posix
 import sys
 
 def usage(cmd):
-    print "Usage: %s [OPTION]..." % (cmd,)
-    print "Print certain system information.  With no OPTION, same as -s.\n"
-    print "  -a, --all                print all information, in the following order,"
-    print "                             except omit -p and -i if unknown:"
-    print "  -s, --kernel-name        print the kernel name"
-    print "  -n, --nodename           print the network node hostname"
-    print "  -r, --kernel-release     print the kernel release"
-    print "  -v, --kernel-version     print the kernel version"
-    print "  -m, --machine            print the machine hardware name"
-    print "  -p, --processor          print the processor type or \"unknown\""
-    print "  -i, --hardware-platform  print the hardware platform or \"unknown\""
-    print "  -o, --operating-system   print the operating system"
-    print "      --help     display this help and exit"
-    print "      --version  output version information and exit"
+    sys.stdout.write("Usage: %s [OPTION]...\n" % (cmd,))
+
+    if cmd == "arch":
+        sys.stdout.write("Print machine architecture.\n\n")
+    else:
+        sys.stdout.write("Print certain system information.  With no OPTION, same as -s.\n\n")
+        sys.stdout.write("  -a, --all                sys.stdout.write(all information, in the following order,\n")
+        sys.stdout.write("                             except omit -p and -i if unknown:\n")
+        sys.stdout.write("  -s, --kernel-name        sys.stdout.write(the kernel name\n")
+        sys.stdout.write("  -n, --nodename           sys.stdout.write(the network node hostname\n")
+        sys.stdout.write("  -r, --kernel-release     sys.stdout.write(the kernel release\n")
+        sys.stdout.write("  -v, --kernel-version     sys.stdout.write(the kernel version\n")
+        sys.stdout.write("  -m, --machine            sys.stdout.write(the machine hardware name\n")
+        sys.stdout.write("  -p, --processor          sys.stdout.write(the processor type or \"unknown\"\n")
+        sys.stdout.write("  -i, --hardware-platform  sys.stdout.write(the hardware platform or \"unknown\"\n")
+        sys.stdout.write("  -o, --operating-system   sys.stdout.write(the operating system\n")
+
+    sys.stdout.write("      --help     display this help and exit\n")
+    sys.stdout.write("      --version  output version information and exit\n")
 
 def xuname():
     ret = {}
@@ -87,18 +92,24 @@ def main():
 
     val = xuname()
 
-    if len(sys.argv) == 1:
-        print val['sysname']
+    if len(sys.argv) == 1 and prog != "arch":
+        sys.stdout.write("%s\n" % (val['sysname'],))
         sys.exit(0)
 
+    if prog == "arch":
+        shortargs = ''
+        longargs = ['help', 'version']
+        m = True
+        num += 1
+    else:
+        shortargs = 'asnrvmpio'
+        longargs = ['all', 'kernel-name', 'nodename', 'kernel-release',
+                    'kernel-version', 'machine', 'processor',
+                    'hardware-platform', 'operating-system', 'help',
+                    'version']
+
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'asnrvmpio',
-                                   ['all', 'kernel-name',
-                                    'nodename', 'kernel-release',
-                                    'kernel-version', 'machine',
-                                    'processor', 'hardware-platform',
-                                    'operating-system', 'help',
-                                    'version'])
+        opts, args = getopt.getopt(sys.argv[1:], shortargs, longargs)
     except getopt.GetoptError:
         help = True
 
@@ -140,7 +151,8 @@ def main():
         usage(prog)
         sys.exit(0)
     elif version:
-        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.stdout.write("pycoreutils %s version %d.%d\n" % \
+                         (prog, ver[0], ver[1],))
         sys.exit(0)
     elif unknown:
         sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[1],))
@@ -148,7 +160,10 @@ def main():
         sys.exit(1)
 
     if all:
-        print "%s %s %s %s %s %s %s %s" % (val['sysname'], val['nodename'], val['release'], val['version'], val['machine'], val['processor'], val['platform'], val['opsys'],)
+        sys.stdout.write("%s %s %s %s %s %s %s %s\n" % \
+                         (val['sysname'], val['nodename'], val['release'],
+                          val['version'], val['machine'], val['processor'],
+                          val['platform'], val['opsys'],))
         sys.exit(0)
 
     if s:

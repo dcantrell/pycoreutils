@@ -1,7 +1,7 @@
-#!/usr/bin/env python -tt
+#!/usr/bin/python -tt
 #
-# basename.py - basename(1) command written in Python
-# Copyright (C) 2007, 2008  David Cantrell <david.l.cantrell@gmail.com>
+# basename - basename(1) command written in Python
+# Copyright (C) 2007, 2008, 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,45 +24,59 @@ import os
 import sys
 
 def usage(cmd):
-    print "Usage: %s NAME [SUFFIX]" % (cmd,)
-    print "   or: %s OPTION" % (cmd,)
-    print "Print NAME with any leading directory components removed."
-    print "If specified, also remove a trailing SUFFIX.\n"
-    print "      --help     display this help and exit"
-    print "      --version  output version information and exit\n"
-    print "Examples:"
-    print "  %s /usr/bin/sort       Output \"sort\"." % (cmd,)
-    print "  %s include/stdio.h .h  Output \"stdio\"." % (cmd,)
+    sys.stdout.write("Usage: %s NAME [SUFFIX]\n" % (cmd,))
+    sys.stdout.write("   or: %s OPTION\n" % (cmd,))
+    sys.stdout.write("Print NAME with any leading directory components removed.\n")
+    sys.stdout.write("If specified, also remove a trailing SUFFIX.\n\n")
+    sys.stdout.write("      --help     display this help and exit\n")
+    sys.stdout.write("      --version  output version information and exit\n\n")
+    sys.stdout.write("Examples:\n")
+    sys.stdout.write("  %s /usr/bin/sort       Output \"sort\".\n" % (cmd,))
+    sys.stdout.write("  %s include/stdio.h .h  Output \"stdio\".\n" % (cmd,))
 
 def xbasename(path, suffix=None):
-    base = os.path.basename(path)
+    if path == '':
+        return ''
+    elif path.rstrip('/') == '':
+        s = os.stat("/")
+        d = os.stat("//")
 
-    if suffix is not None:
+        if s.st_dev == d.st_dev and s.st_ino == d.st_ino:
+            return '/'
+        else:
+            return '//'
+
+    base = os.path.basename(path.rstrip('/'))
+
+    if suffix and base != suffix and not suffix.endswith('/'):
         base = base.rstrip(suffix)
 
     return base
+
+def xexit(prog, msg):
+    sys.stderr.write(msg)
+    sys.stderr.write("Try `%s --help' for more information.\n" % (prog,))
+    sys.exit(1)
 
 def main():
     prog = xbasename(sys.argv[0])
 
     if len(sys.argv) == 1:
-        sys.exit(0)
+        xexit(prog, "%s: missing operand\n" % (prog,))
 
     if sys.argv[1] == "--help":
         usage(prog)
         sys.exit(0)
     elif sys.argv[1] == "--version":
-        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.stdout.write("pycoreutils %s version %d.%d\n" % (prog, ver[0], ver[1],))
         sys.exit(0)
     else:
         if len(sys.argv) > 3:
-            sys.stderr.write("%s: extra operand `%s'" % (prog, sys.argv[len(sys.argv) - 1],))
-            sys.stderr.write("Try `%s --help' for more information." % (prog,))
-            sys.exit(1)
+            xexit(prog, "%s: extra operand `%s'\n" % (prog, sys.argv[len(sys.argv) - 1],))
         elif len(sys.argv) == 3:
-            print xbasename(sys.argv[1], suffix=sys.argv[2])
+            sys.stdout.write("%s\n" % (xbasename(sys.argv[1], suffix=sys.argv[2]),))
         else:
-            print xbasename(sys.argv[1])
+            sys.stdout.write("%s\n" % (xbasename(sys.argv[1]),))
 
         sys.exit(0)
 

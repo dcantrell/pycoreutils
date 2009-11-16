@@ -1,0 +1,74 @@
+src/
+    These programs are the commands.  The ones that replace the /bin and
+    /usr/bin commands in GNU coreutils.
+
+    The driver should contain a ver tuple with the major and minor version
+    number.  The version is unique to the command.
+
+    The driver should contain all functionality in a main() function and
+    call that main() function from the bottom of the script in an
+    if __name__ == "__main__" block.  Within reason, of course.  Your
+    main() function is allowed to call other functions that you make, but
+    they should all be contained in the single command.
+
+pycoreutils/
+    Supplementary module.  Some things have to be implemented as Python
+    extension modules in C, so we do that here and then import them in to
+    the frontend command in src/
+
+Style
+    Please follow the same style that has been followed for the other
+    scripts.
+
+    * We use 4 spaces for indentation, not tabs.
+    * The #! interpreter is to be '/usr/bin/env python -tt'
+    * Each .py file has a GPL boilerplate at the top with the name of
+      the author (you).
+    * Add yourself to the AUTHORS file if you aren't already listed.
+
+Generating Patches
+    When you make changes to the code, you should generate a patch to send
+    upstream.  Before editing, it's a good idea to copy the original source
+    file to a new name so you can edit the other copy.  Here is a basic
+    workflow:
+
+        $ cd pycoreutils-VERSION/src
+        $ cp -p basename basename.orig
+        $ vim basename                   # make your changes
+
+    Generating a patch is done using GNU diffutils or a diff(1) command
+    capable of producing a unified diff:
+
+        $ diff -u basename.orig basename > mypatch
+
+    Submit the 'mypatch' file and explain your changes and why we should merge
+    your changes.
+
+    If you are making a lot of changes to many files, it's probably easier to
+    use the git version control system.  You can clone the upstream repository
+    and commit your changes locally and then generate a set of diffs against
+    the latest upstream code.
+
+        $ git clone git://github.com/dcantrell/pycoreutils.git/
+        $ cd pycoreutils
+        $ # make your changes to files here
+        $ git add FILE           # repeat this add/commit process for
+        $ git commit             # each logical change to the code
+        $ git fetch
+        $ git rebase origin
+        $ git format-patch origin
+
+    The output of git format-patch will be a set of files containing a patch
+    for each add/commit you made locally.  The patches will be made against
+    the latest upstream.  Submit your patch files upstream.
+
+    Yet another way to contribute to the project is to create an account on
+    github.com, fork the project, do your changes there, and send a pull
+    request to the main project.  Your forked branch can be merged back in
+    to the main branch from there and you can entirely avoid sending patches
+    by email.
+
+Submitting Patches
+    Send your patches to the authors or current maintainer listed in the
+    AUTHORS file.  If you are forking the project on github.com, simply send
+    a pull request to have your branched merged in to the main repository.

@@ -1,7 +1,6 @@
-#!/usr/bin/python -tt
+# configure.ac for pycoreutils
 #
-# true - true(1) command written in Python
-# Copyright (C) 2007, 2008, 2009  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,14 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
 
-ver = (2, 0)
+ACLOCAL_AMFLAGS = -I m4
 
-import sys
+SUBDIRS = pycoreutils src tests
 
-def main():
-    sys.exit(not True)
+EXTRA_DIST = AUTHORS COPYING README TODO ChangeLog
 
-if __name__ == "__main__":
-    main()
+MAINTAINERCLEANFILES = Makefile.in config.guess config.h.in config.sub \
+                       depcomp install-sh ltmain.sh missing ABOUT-NLS \
+                       INSTALL aclocal.m4 configure
+
+CLEANFILES = *~ ChangeLog
+
+MOSTLYCLEANDIRS = m4
+
+ChangeLog:
+	git log > ChangeLog
+
+pychecker: all
+	$(MAKE) -C src pychecker

@@ -1,7 +1,6 @@
-#!/usr/bin/python -tt
+# Makefile.am for pycoreutils/pycoreutils subdirectory
 #
-# true - true(1) command written in Python
-# Copyright (C) 2007, 2008, 2009  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,14 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
 
-ver = (2, 0)
+CFLAGS += -Werror -Wmissing-prototypes -fno-strict-aliasing
 
-import sys
+INCLUDES = $(PYTHON_INCLUDES)
 
-def main():
-    sys.exit(not True)
+# install Python module code directly in to site-packages
+pkgpyexecdir = $(pyexecdir)
+pkgpythondir = $(pythondir)
 
-if __name__ == "__main__":
-    main()
+pkgpyexec_LTLIBRARIES        = pycoreutilsmodule.la
+pycoreutilsmodule_la_LDFLAGS = -module -avoid-version $(PYTHON_LDFLAGS)
+pycoreutilsmodule_la_LIBADD  = $(PYTHON_LIBS)
+pycoreutilsmodule_la_SOURCES = pycoreutilsmodule.c
+
+MAINTAINERCLEANFILES = Makefile.in

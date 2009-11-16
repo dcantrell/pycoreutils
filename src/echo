@@ -1,4 +1,4 @@
-#!/usr/bin/env python -tt
+#!/usr/bin/python -tt
 #
 # echo - echo(1) command written in Python
 # Copyright (C) 2008  David Cantrell <david.l.cantrell@gmail.com>

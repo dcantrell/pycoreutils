@@ -3,7 +3,12 @@
       * packaging? (tarball, dmg, other?)
       * Can we just use python disttools?
 
-* All of these commands:
+* Create a test suite for all of the commands.  If you implement one of the
+  commands below, you need to develop a test suite for it as well.  For test
+  case ideas, have a look at the real GNU coreutils.
+
+* All of these commands (as listed from the 'rpm -ql' output of Fedora's
+  coreutils package):
     /bin/cat
     /bin/chgrp
     /bin/chmod
@@ -17,6 +22,7 @@
     /bin/ln
     /bin/ls
     /bin/mknod
+    /bin/mktemp
     /bin/mv
     /bin/nice
     /bin/rm
@@ -35,13 +41,11 @@
     /usr/bin/dir
     /usr/bin/dircolors
     /usr/bin/du
-    /usr/bin/env
     /usr/bin/expand
     /usr/bin/expr
     /usr/bin/factor
     /usr/bin/fmt
     /usr/bin/fold
-    /usr/bin/groups
     /usr/bin/head
     /usr/bin/id
     /usr/bin/install
@@ -64,13 +68,17 @@
     /usr/bin/sha384sum
     /usr/bin/sha512sum
     /usr/bin/shred
+    /usr/bin/shuf
     /usr/bin/split
     /usr/bin/stat
+    /usr/bin/stdbuf
     /usr/bin/sum
     /usr/bin/tac
     /usr/bin/tail
     /usr/bin/test
+    /usr/bin/timeout
     /usr/bin/tr
+    /usr/bin/truncate
     /usr/bin/tsort
     /usr/bin/unexpand
     /usr/bin/uniq

@@ -1,7 +1,6 @@
-#!/usr/bin/python -tt
+# Makefile.am for pycoreutils/tests subdirectory
 #
-# true - true(1) command written in Python
-# Copyright (C) 2007, 2008, 2009  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,14 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
 
-ver = (2, 0)
+EXTRADIST = baseclass.py $(TESTS)
+MAINTAINERCLEANFILES = Makefile.in *.pyc
 
-import sys
+TESTS_ENVIRONMENT = PYTHONPATH=$(top_builddir)/pycoreutils/.libs
 
-def main():
-    sys.exit(not True)
-
-if __name__ == "__main__":
-    main()
+TESTS = test_basename.py \
+        test_cksum.py
