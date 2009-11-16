@@ -21,6 +21,8 @@
 #include <Python.h>
 #include <unistd.h>
 
+PyMODINIT_FUNC initpycoreutils(void);
+
 static PyObject *hostid_cmd(PyObject *self, PyObject *args) {
     unsigned int id;
     char ret[9];
@@ -45,7 +47,7 @@ static PyMethodDef pycoreutilsMethods[] = {
     { NULL, NULL, 0, NULL }
 };
 
-void initpycoreutils(void) {
+PyMODINIT_FUNC initpycoreutils(void) {
     PyObject *m, *d;
 
     m = Py_InitModule("pycoreutils", pycoreutilsMethods);

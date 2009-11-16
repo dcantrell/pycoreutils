@@ -18,13 +18,15 @@
 
 CFLAGS += -Werror -Wmissing-prototypes -fno-strict-aliasing
 
+INCLUDES = $(PYTHON_INCLUDES)
+
 # install Python module code directly in to site-packages
 pkgpyexecdir = $(pyexecdir)
 pkgpythondir = $(pythondir)
 
-pkgpyexec_LTLIBRARIES  = pycoreutils.la
-pycoreutils_la_LDFLAGS = -module -avoid-version $(PYTHON_LDFLAGS)
-pycoreutils_la_LIBADD  = $(PYTHON_LIBS)
-pycoreutils_la_SOURCES = pycoreutils.c
+pkgpyexec_LTLIBRARIES        = pycoreutilsmodule.la
+pycoreutilsmodule_la_LDFLAGS = -module -avoid-version $(PYTHON_LDFLAGS)
+pycoreutilsmodule_la_LIBADD  = $(PYTHON_LIBS)
+pycoreutilsmodule_la_SOURCES = pycoreutilsmodule.c
 
 MAINTAINERCLEANFILES = Makefile.in
