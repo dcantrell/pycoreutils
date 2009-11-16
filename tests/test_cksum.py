@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 #
-# baseclass.py - base classes for all test cases
+# test_cksum.py - cksum test suite
 # Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -18,29 +18,16 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-import os
 import unittest
 
-class RequiresCommand(unittest.TestCase):
-    def setUp(self):
-        self._commandPath = os.path.realpath(os.getcwd() + "/../src")
+from baseclass import RequiresCksum
 
-    def getCommand(self, cmd):
-        return os.path.realpath(self._commandPath + "/" + cmd)
+# XXX: WRITE ME
 
-class RequiresBasename(RequiresCommand):
-    def setUp(self):
-        RequiresCommand.setUp(self)
-        self._basename = self.getCommand("basename")
+def suite():
+    suite = unittest.TestSuite()
 
-        s = os.stat("/")
-        d = os.stat("//")
-        if (s.st_dev == d.st_dev) and (s.st_ino == d.st_ino):
-            self._doubleSlash = "/"
-        else:
-            self._doubleSlash = "//"
+    return suite
 
-class RequiresCksum(RequiresCommand):
-    def setUp(self):
-        RequiresCommand.setUp(self)
-        self._cksum = self.getCommand("cksum")
+s = suite()
+unittest.TextTestRunner(verbosity=2).run(s)
