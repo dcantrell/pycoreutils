@@ -38,7 +38,13 @@ def xbasename(path, suffix=None):
     if path == '':
         return ''
     elif path.rstrip('/') == '':
-        return '/'
+        s = os.stat("/")
+        d = os.stat("//")
+
+        if s.st_dev == d.st_dev and s.st_ino == d.st_ino:
+            return '/'
+        else:
+            return '//'
 
     base = os.path.basename(path.rstrip('/'))
 
