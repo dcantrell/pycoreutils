@@ -1,4 +1,4 @@
-#!/usr/bin/env python -tt
+#!/usr/bin/python -tt
 #
 # test_basename.py - basename test suite
 # Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
@@ -20,53 +20,129 @@
 
 import commands
 import os
-from baseclass import RequiresCommand
+import unittest
 
-class BasenameTestCase(RequiresCommand):
-    def setUp(self):
-        RequiresCommand.__setUp__(self)
-        self._basename = self.getCommand("basename")
+from baseclass import RequiresBasename
 
-        statSingle = os.stat("/")
-        statDouble = os.stat("//")
-        if (statSingle["st_dev"] == statDouble["st_dev"]) and \
-           (statSingle["st_ino"] == statDouble["st_ino"]):
-            self._doubleSlash = "/"
-        else:
-            self._doubleSlash = "//"
-
+class BasenameMissingOperandTestCase(RequiresBasename):
     def runTest(self):
         self.assertEqual(commands.getoutput(self._basename),
                          "basename: missing operand\nTry `basename --help' for more information.")
+
+class BasenameExtraOperandTestCase(RequiresBasename):
+    def runTest(self):
         self.assertEqual(commands.getoutput(self._basename + " a b c"),
                          "basename: extra operand `c'\nTry `basename --help' for more information.")
 
-        tests = [("d/f", "f"),
-                 ("/d/f", "f"),
-                 ("d/f//", "f"),
-                 ("f", "f"),
-                 ("/", "/"),
-                 ("//", self._doubleSlash),
-                 ("///", "/"),
-                 ("///a///", "a"),
-                 ("''", ""),
-                 ("f.s .s", "f"),
-                 ("fs s", "f"),
-                 ("fs fs", "fs"),
-                 ("fs/ s", "f"),
-                 ("dir/file.suf .suf", "file"),
-                 ("// /", self._doubleSlash),
-                 ("// //", self._doubleSlash),
-                 ("fs x", "fs"),
-                 ("fs ''", "fs"),
-                 ("fs/ s/", "fs")]
-        for (args, result) in tests:
-            self.assertEqual(commands.getoutput(self._basename + " " + args),
-                             result)
+class BasenameTestA(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " d/f"), "f")
+
+class BasenameTestB(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " /d/f"), "f")
+
+class BasenameTestC(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " d/f/"), "f")
+
+class BasenameTestD(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " d/f//"), "f")
+
+class BasenameTestE(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " f"), "f")
+
+class BasenameTestF(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " /"), "/")
+
+class BasenameTestG(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " //"),
+                         self._doubleSlash)
+
+class BasenameTestH(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " ///"), "/")
+
+class BasenameTestI(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " ///a///"), "a")
+
+class BasenameTestJ(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " ''"), "")
+
+class BasenameTestK(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " f.s .s"), "f")
+
+class BasenameTestL(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " fs s"), "f")
+
+class BasenameTestM(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " fs fs"), "fs")
+
+class BasenameTestN(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " fs/ s"), "f")
+
+class BasenameTestO(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename +
+                                            " dir/file.suf .suf"), "file")
+
+class BasenameTestP(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " // /"),
+                         self._doubleSlash)
+
+class BasenameTestQ(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " // //"),
+                         self._doubleSlash)
+
+class BasenameTestR(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " fs x"), "fs")
+
+class BasenameTestS(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " fs ''"), "fs")
+
+class BasenameTestT(RequiresBasename):
+    def runTest(self):
+        self.assertEqual(commands.getoutput(self._basename + " fs/ s/"), "fs")
 
 def suite():
     suite = unittest.TestSuite()
-    suite.add(BasenameTestCase())
+    suite.addTest(BasenameMissingOperandTestCase())
+    suite.addTest(BasenameExtraOperandTestCase())
+    suite.addTest(BasenameTestA())
+    suite.addTest(BasenameTestB())
+    suite.addTest(BasenameTestC())
+    suite.addTest(BasenameTestD())
+    suite.addTest(BasenameTestE())
+    suite.addTest(BasenameTestF())
+    suite.addTest(BasenameTestG())
+    suite.addTest(BasenameTestH())
+    suite.addTest(BasenameTestI())
+    suite.addTest(BasenameTestJ())
+    suite.addTest(BasenameTestK())
+    suite.addTest(BasenameTestL())
+    suite.addTest(BasenameTestM())
+    suite.addTest(BasenameTestN())
+    suite.addTest(BasenameTestO())
+    suite.addTest(BasenameTestP())
+    suite.addTest(BasenameTestQ())
+    suite.addTest(BasenameTestR())
+    suite.addTest(BasenameTestS())
+    suite.addTest(BasenameTestT())
+
     return suite
 
 s = suite()

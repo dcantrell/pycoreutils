@@ -1,6 +1,6 @@
-#!/usr/bin/env python -tt
+#!/usr/bin/python -tt
 #
-# baseclass.py - base class for all test cases
+# baseclass.py - base classes for all test cases
 # Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -27,3 +27,15 @@ class RequiresCommand(unittest.TestCase):
 
     def getCommand(self, cmd):
         return os.path.realpath(self._commandPath + "/" + cmd)
+
+class RequiresBasename(RequiresCommand):
+    def setUp(self):
+        RequiresCommand.setUp(self)
+        self._basename = self.getCommand("basename")
+
+        s = os.stat("/")
+        d = os.stat("//")
+        if (s.st_dev == d.st_dev) and (s.st_ino == d.st_ino):
+            self._doubleSlash = "/"
+        else:
+            self._doubleSlash = "//"
