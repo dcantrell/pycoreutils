@@ -19,8 +19,11 @@ m4/ltversion.m4
 m4/lt~obsolete.m4
 missing
 pycoreutils/.deps
+pycoreutils/.libs
 pycoreutils/Makefile
 pycoreutils/Makefile.in
+pycoreutils/pycoreutilsmodule.la
+pycoreutils/pycoreutilsmodule.lo
 src/Makefile
 src/Makefile.in
 stamp-h1
