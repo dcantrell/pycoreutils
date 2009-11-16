@@ -16,6 +16,28 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-MAINTAINERCLEANFILES = Makefile.in
+# XXX: arch is a symlink to uname
+dist_bin_SCRIPTS = basename \
+                   cksum \
+                   cut \
+                   dirname \
+                   echo \
+                   false \
+                   groups \
+                   hostid \
+                   logname \
+                   md5sum \
+                   mkdir \
+                   printenv \
+                   pwd \
+                   sha1sum \
+                   sleep \
+                   sync \
+                   tee \
+                   true \
+                   tty \
+                   uname \
+                   whoami \
+                   yes
 
-# arch is a symlink to uname
+MAINTAINERCLEANFILES = Makefile.in
