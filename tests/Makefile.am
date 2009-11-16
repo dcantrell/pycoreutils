@@ -21,4 +21,5 @@ MAINTAINERCLEANFILES = Makefile.in *.pyc
 
 TESTS_ENVIRONMENT = PYTHONPATH=$(top_builddir)/pycoreutils/.libs
 
-TESTS = test_basename.py
+TESTS = test_basename.py \
+        test_cksum.py

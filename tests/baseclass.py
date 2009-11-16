@@ -19,6 +19,7 @@
 #
 
 import os
+import tempfile
 import unittest
 
 class RequiresCommand(unittest.TestCase):
@@ -44,3 +45,15 @@ class RequiresCksum(RequiresCommand):
     def setUp(self):
         RequiresCommand.setUp(self)
         self._cksum = self.getCommand("cksum")
+        (self._fd, self._testfile) = tempfile.mkstemp(prefix='cksum',
+                                                      text=True)
+        self._cmd = self._cksum + " " + self._testfile
+
+    def tearDown(self):
+        if self._testfile:
+            os.unlink(self._testfile)
+
+class RequiresGroups(RequiresCommand):
+    def setUp(self):
+        RequiresCommand.setUp(self)
+        self._groups = self.getCommand("groups")
