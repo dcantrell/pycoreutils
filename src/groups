@@ -21,60 +21,65 @@
 ver = (2, 0)
 
 import getpass
+import grp
 import os
 import pwd
 import sys
 
 def usage(cmd):
-    print "Usage: %s [OPTIONS]... [USERNAME]..n" % (cmd,)
-    print "      --help     display this help and exit"
-    print "      --version  output version information and exit\n"
-    print "Same as id -Gn.  If no USERNAME, user current process."
+    sys.stdout.write("Usage: %s [OPTIONS]... [USERNAME]..n\n" % (cmd,))
+    sys.stdout.write("      --help     display this help and exit\n")
+    sys.stdout.write("      --version  output version information and exit\n\n")
+    sys.stdout.write("Same as id -Gn.  If no USERNAME, user current process.\n")
 
-def xgroups(userlist=None):
-    header = False
-    ret = []
-
-    if userlist is None:
-        userlist = [getpass.getuser()]
-
-    if len(userlist) > 1:
-        header = True
+def xgroups(userlist=[]):
+    ret = {}
+    groups = grp.getgrall()
 
     for user in userlist:
         try:
-            (
+            pwent = pwd.getpwnam(user)
         except KeyError:
-            ret.append("id: %s: No such user" % (user,))
+            sys.stderr.write("%s: %s: No such user\n" % \
+                             (os.path.basename(sys.argv[0]), user,))
+        else:
+            ret[user] = []
+            tmpGroups = set()
 
-id: 500: No such user
+            for group in grp.getgrall():
+                if user in group.gr_mem:
+                    tmpGroups.add(group.gr_name)
 
+            ret[user] = list(tmpGroups)
 
-    return userlist
+    return ret
 
 def main():
-    c = 0
     prog = os.path.basename(sys.argv[0])
 
     if len(sys.argv) == 1:
-        print xgroups()
-        sys.exit(0)
+        sys.argv.append(getpass.getuser())
 
     if sys.argv[1] == "--help":
         usage(prog)
         sys.exit(0)
     elif sys.argv[1] == "--version":
-        c += 1
-        print "pycoreutils %s version %d.%d" % (prog, ver[0], ver[1],)
+        sys.stdout.write("pycoreutils %s version %d.%d\n" % \
+                         (prog, ver[0], ver[1],))
         sys.exit(0)
     else:
-        userlist = []
-        if len(sys.argv) - c > 0:
-            i = c
-            while i < len(sys.argv):
-                userlist.append(sys.argv[i])
-                i += 1
-            print xgroups(userlist)
+        userlist = sys.argv[1:]
+
+        if len(userlist):
+            grouplist = xgroups(userlist)
+
+            if len(grouplist) == 1:
+                (k, v) = grouplist.items()[0]
+                sys.stdout.write("%s\n" % (" ".join(v),))
+            elif len(grouplist) > 1:
+                for (k, v) in grouplist.items():
+                    sys.stdout.write("%s : %s\n" % (k, " ".join(v),))
+
         sys.exit(0)
 
 if __name__ == "__main__":
