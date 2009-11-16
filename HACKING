@@ -21,7 +21,7 @@ Style
     scripts.
 
     * We use 4 spaces for indentation, not tabs.
-    * The #! interpreter is to be '/usr/bin/env python -tt'
+    * The #! interpreter is to be '/usr/bin/python -tt'
     * Each .py file has a GPL boilerplate at the top with the name of
       the author (you).
     * Add yourself to the AUTHORS file if you aren't already listed.
