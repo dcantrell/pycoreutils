@@ -9,7 +9,6 @@
 
 * All of these commands (as listed from the 'rpm -ql' output of Fedora's
   coreutils package):
-    /bin/arch
     /bin/cat
     /bin/chgrp
     /bin/chmod
