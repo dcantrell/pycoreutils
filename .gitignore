@@ -27,5 +27,6 @@ pycoreutils/pycoreutilsmodule.lo
 src/Makefile
 src/Makefile.in
 stamp-h1
+tests/*.pyc
 tests/Makefile
 tests/Makefile.in
