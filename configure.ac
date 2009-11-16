@@ -24,7 +24,7 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/basename])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile pycoreutils/Makefile src/Makefile tests/Makefile])
-
+AM_SILENT_RULES([yes])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_DEFINE_UNQUOTED([BUILD_DATE], ["`date +%m%d%Y`"], [Date of pycoreutils build])
