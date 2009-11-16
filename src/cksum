@@ -145,7 +145,7 @@ def main():
                                    ["help", "version"])
     except getopt.GetoptError:
         help = True
-        
+
     for o, a in opts:
         if o in ("--help"):
             help = True
