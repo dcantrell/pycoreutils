@@ -90,11 +90,10 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], optString, optList)
-    
     except getopt.GetoptError, e:
         unknown = True
         badOpt = str(e).split()[1]
-	
+
     for o, a in opts:
         if o in ('-A', '--show-all'):
             showEnds = True
@@ -104,7 +103,7 @@ def main():
             numberNonBlank = True
         elif o in ('-e'):
             showEnds = True
-            showNonPrinting = True    
+            showNonPrinting = True
         elif o in ('-E', '--show-ends'):
             showEnds = True
         elif o in ('-n', '--number'):
