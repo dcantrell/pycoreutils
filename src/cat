@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python -tt
 #
 # cat.py - cat(1) command written in Python
 # Copyright (C) 2009  James Bair <james.d.bair@gmail.com>
@@ -86,13 +86,14 @@ def main():
     numberLines = False
     squeezeBlank = False
     showVersion = False
+    unknown = False
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], optString, optList)
     
     except getopt.GetoptError, e:
         unknown = True
-	badOpt = str(e).split()[1]
+        badOpt = str(e).split()[1]
 	
     for o, a in opts:
         if o in ('-A', '--show-all'):
@@ -134,7 +135,7 @@ def main():
         if badOpt.startswith('--'):
             helpstr = "unrecognized option '%s'" % (badOpt,)
         else:
-            helpstr = "invalid option -- '%s'" % (badOpt,)
+            helpstr = "invalid option -- '%s'" % (badOpt.split('-')[1],)
 
         sys.stderr.write("%s: %s\n" % (prog, helpstr,))
         sys.stderr.write("Try `%s --help' for more information.\n" % (prog,))
