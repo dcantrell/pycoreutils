@@ -63,10 +63,6 @@
     /usr/bin/readlink
     /usr/bin/runcon
     /usr/bin/seq
-    /usr/bin/sha224sum
-    /usr/bin/sha256sum
-    /usr/bin/sha384sum
-    /usr/bin/sha512sum
     /usr/bin/shred
     /usr/bin/shuf
     /usr/bin/split
