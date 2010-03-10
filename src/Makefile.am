@@ -17,6 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # XXX: arch is a symlink to uname
+# XXX: sha1sum is a symlink to sha224sum, sha256sum, sha384sum, sha512sum
 dist_bin_SCRIPTS = basename \
                    cksum \
                    cut \

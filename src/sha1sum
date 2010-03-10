@@ -1,7 +1,8 @@
 #!/usr/bin/python -tt
 #
-# sha1sum - sha1sum(1) command written in Python
-# Copyright (C) 2008  David Cantrell <david.l.cantrell@gmail.com>
+# sha1sum - sha1sum(1), sha224sum(1), sha256sum(1), sha384sum(1),
+#           and sha512sum(1) command written in Python
+# Copyright (C) 2008, 2009  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,15 +21,28 @@
 
 import getopt
 import glob
-import sha
+import hashlib
 import os
 import sys
 
-ver = (1, 0)
+ver = (2, 0)
+
+# modes are by command, the tuple fields are:
+#     number of bits (int)
+#     digest string length (int)
+#     standard name (string)
+mode = {'sha1sum': (160, 40, 'FIPS-180-1',),
+        'sha224sum': (224, 56, 'RFC 3874',),
+        'sha256sum': (256, 64, 'FIPS-180-2',),
+        'sha384sum': (384, 96, 'FIPS-180-2',),
+        'sha512sum': (512, 128, 'FIPS-180-2',)}
 
 def usage(cmd):
+    (bits, digest_length, standard,) = mode[cmd]
+    desc = cmd.upper().replace('SUM', '')
+
     print "Usage: %s [OPTION] [FILE]..." % (cmd,)
-    print "Print or check MD5 (128-but) checksums."
+    print "Print or check %s (%d-but) checksums." % (desc, bits,)
     print "With no FILE, or when FILE is -, read standard input.\n"
     print "  -b, --binary            read in binary mode"
     print "  -c, --check             read MD5 sums from the FILEs and check them"
@@ -38,12 +52,13 @@ def usage(cmd):
     print "  -w, --warn              warn about improperly formatted checksum lines\n"
     print "      --help     display this help and exit"
     print "      --version  output version information and exit\n"
-    print "The sums are computed as described in FIPS-180-1.  When checking, the input"
+    print "The sums are computed as described in %s.  When checking, the input" % (standard,)
     print "should be a former output of this program.  The default mode is to print"
     print "a line with checksum, a character indicating type (`*' for binary, ` ' for"
     print "text), and name for each FILE."
 
-def check_digest(sumfile, statusonly=False):
+def check_digest(cmd, sumfile, statusonly=False):
+    (bits, digest_length, standard) = mode[cmd]
     ret = True
 
     try:
@@ -68,10 +83,10 @@ def check_digest(sumfile, statusonly=False):
         else:
             binary = False
 
-        digest = pair[:32]
-        filename = pair[34:]
+        digest = pair[:digest_length]
+        filename = pair[digest_length+1:]
 
-        (calcret, calcdigest) = calc_digest(filename, binary=binary)
+        (calcret, calcdigest) = calc_digest(cmd, filename, binary=binary)
 
         if calcret and digest == calcdigest:
             if not statusonly:
@@ -81,7 +96,7 @@ def check_digest(sumfile, statusonly=False):
 
     return ret
 
-def calc_digest(filename, binary=False):
+def calc_digest(cmd, filename, binary=False):
     ret = True
 
     if filename == '-':
@@ -102,7 +117,19 @@ def calc_digest(filename, binary=False):
         ret = False
         return (ret, '')
 
-    calc = sha.new()
+    if cmd == 'sha1sum':
+        calc = hashlib.sha1()
+    elif cmd == 'sha224sum':
+        calc = hashlib.sha224()
+    elif cmd == 'sha256sum':
+        calc = hashlib.sha256()
+    elif cmd == 'sha384sum':
+        calc = hashlib.sha384()
+    elif cmd == 'sha512sum':
+        calc = hashlib.sha512()
+    else:
+        raise ImportError, "hashlib does not support %s" % (cmd,)
+
     calc.update(fd.read())
     fd.close()
 
@@ -115,7 +142,8 @@ def main():
     binary, check, text, warn = False, False, False, False
     ret = True
     type = ' '
-    digestHexBytes = (160 / 4)
+    (bits, digest_length, standard) = mode[prog]
+    digestHexBytes = (bits / 4)
     minDigestLineLength = digestHexBytes + 3
 
     try:
@@ -179,14 +207,29 @@ def main():
     if args == []:
         args.append('-')
 
+    if prog == 'sha1sum':
+        fmt = "%40s"
+    elif prog == 'sha224sum':
+        fmt = '%56s'
+    elif prog == 'sha256sum':
+        fmt = '%64s'
+    elif prog == 'sha384sum':
+        fmt = '%96s'
+    elif prog == 'sha512sum':
+        fmt = '%128s'
+    else:
+        raise ImportError, "hashlib does not support %s" % (cmd,)
+
+    fmt += " %s%s"
+
     for arg in args:
         sublist = glob.glob(arg)
 
         for subarg in sublist:
             if check:
-                ret &= check_digest(subarg, statusonly=status)
+                ret &= check_digest(cmd, subarg, statusonly=status)
             else:
-                (calcret, digest) = calc_digest(subarg,
+                (calcret, digest) = calc_digest(prog, subarg,
                                                 binary=binary)
                 ret &= calcret
 
@@ -201,7 +244,7 @@ def main():
                 subarg = subarg.replace('\n', '\\n')
                 subarg = subarg.replace('\\', '\\\\')
 
-                print "%32s %s%s" % (digest, type, subarg,)
+                print fmt % (digest, type, subarg,)
 
     sys.exit(not int(ret))
 
