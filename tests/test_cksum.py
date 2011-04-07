@@ -113,20 +113,3 @@ class CksumB2KTestCase(RequiresCksum):
     def runTest(self):
         output = "2318161176 2048 " + self._testfile
         self.assertEquals(commands.getoutput(self._cmd), output)
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(CksumEmptyFileTestCase())
-    suite.addTest(CksumATestCase())
-    suite.addTest(CksumAbcTestCase())
-    suite.addTest(CksumMessageDigestTestCase())
-    suite.addTest(CksumAlphabetTestCase())
-    suite.addTest(CksumAlphaNumericTestCase())
-    suite.addTest(CksumDigitsTestCase())
-    suite.addTest(CksumA1KTestCase())
-    suite.addTest(CksumB2KTestCase())
-
-    return suite
-
-s = suite()
-unittest.TextTestRunner(verbosity=2).run(s)

@@ -117,33 +117,3 @@ class BasenameTestS(RequiresBasename):
 class BasenameTestT(RequiresBasename):
     def runTest(self):
         self.assertEqual(commands.getoutput(self._basename + " fs/ s/"), "fs")
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(BasenameMissingOperandTestCase())
-    suite.addTest(BasenameExtraOperandTestCase())
-    suite.addTest(BasenameTestA())
-    suite.addTest(BasenameTestB())
-    suite.addTest(BasenameTestC())
-    suite.addTest(BasenameTestD())
-    suite.addTest(BasenameTestE())
-    suite.addTest(BasenameTestF())
-    suite.addTest(BasenameTestG())
-    suite.addTest(BasenameTestH())
-    suite.addTest(BasenameTestI())
-    suite.addTest(BasenameTestJ())
-    suite.addTest(BasenameTestK())
-    suite.addTest(BasenameTestL())
-    suite.addTest(BasenameTestM())
-    suite.addTest(BasenameTestN())
-    suite.addTest(BasenameTestO())
-    suite.addTest(BasenameTestP())
-    suite.addTest(BasenameTestQ())
-    suite.addTest(BasenameTestR())
-    suite.addTest(BasenameTestS())
-    suite.addTest(BasenameTestT())
-
-    return suite
-
-s = suite()
-unittest.TextTestRunner(verbosity=2).run(s)
