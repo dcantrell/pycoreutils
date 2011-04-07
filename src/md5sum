@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/env python
 #
 # md5sum - md5sum(1) command written in Python
 # Copyright (C) 2008, 2009  David Cantrell <david.l.cantrell@gmail.com>

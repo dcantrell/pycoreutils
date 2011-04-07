@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/env python
 #
 # cat.py - cat(1) command written in Python
 # Copyright (C) 2009  James Bair <james.d.bair@gmail.com>

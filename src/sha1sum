@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/env python
 #
 # sha1sum - sha1sum(1), sha224sum(1), sha256sum(1), sha384sum(1),
 #           and sha512sum(1) command written in Python
