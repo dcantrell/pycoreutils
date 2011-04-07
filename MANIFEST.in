@@ -1,0 +1,3 @@
+include AUTHORS COPYING HACKING README TODO
+include Makefile ChangeLog
+recursive-include tests *.py

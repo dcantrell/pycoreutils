@@ -1,6 +1,6 @@
-# configure.ac for pycoreutils
+# setup.py for pycoreutils
 #
-# Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2011  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,22 +16,18 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-ACLOCAL_AMFLAGS = -I m4
+import glob
+import os
+from distutils.core import setup
+from distutils.core import Extension
 
-SUBDIRS = pycoreutils src tests
-
-EXTRA_DIST = AUTHORS COPYING README TODO ChangeLog
-
-MAINTAINERCLEANFILES = Makefile.in config.guess config.h.in config.sub \
-                       depcomp install-sh ltmain.sh missing ABOUT-NLS \
-                       INSTALL aclocal.m4 configure
-
-CLEANFILES = *~ ChangeLog
-
-MOSTLYCLEANDIRS = m4
-
-ChangeLog:
-	git log > ChangeLog
-
-pychecker: all
-	$(MAKE) -C src pychecker
+setup(name='pycoreutils',
+      version='0.1',
+      author='David Cantrell',
+      author_email='david.l.cantrell@gmail.com',
+      url='https://github.com/dcantrell/pycoreutils',
+      description='Python reimplementation of GNU coreutils',
+      license='GPLv2+',
+      ext_modules=[Extension('pycoreutils',
+                             glob.glob(os.path.join('pycoreutils', '*.c')))],
+      scripts=glob.glob(os.path.join('src', '*')))

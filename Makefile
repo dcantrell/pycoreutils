@@ -1,6 +1,6 @@
-# Makefile.am for pycoreutils/pycoreutils subdirectory
+# Makefile for pycoreutils
 #
-# Copyright (C) 2009  David Cantrell <david.l.cantrell@gmail.com>
+# Copyright (C) 2011  David Cantrell <david.l.cantrell@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,17 +16,28 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-CFLAGS += -Werror -Wmissing-prototypes -fno-strict-aliasing
+PYTHON    ?= python
+DESTDIR   ?= /
+TESTSUITE = tests/baseclass.py
 
-INCLUDES = $(PYTHON_INCLUDES)
+default: all
 
-# install Python module code directly in to site-packages
-pkgpyexecdir = $(pyexecdir)
-pkgpythondir = $(pythondir)
+all:
+	$(PYTHON) setup.py build
 
-pkgpyexec_LTLIBRARIES        = pycoreutilsmodule.la
-pycoreutilsmodule_la_LDFLAGS = -module -avoid-version $(PYTHON_LDFLAGS)
-pycoreutilsmodule_la_LIBADD  = $(PYTHON_LIBS)
-pycoreutilsmodule_la_SOURCES = pycoreutilsmodule.c
+test: all
+	PYTHONPATH=$$(find $$(pwd) -name "*.so" | head -n 1 | xargs dirname):. \
+	$(PYTHON) $(TESTSUITE) -v
 
-MAINTAINERCLEANFILES = Makefile.in
+clean:
+	$(PYTHON) setup.py -q clean --all
+	[ -d .git ] && git clean -d -x -f
+
+install: all
+	$(PYTHON) setup.py install --root=$(DESTDIR)
+
+ChangeLog:
+	git log > ChangeLog
+
+release: ChangeLog
+	$(PYTHON) setup.py sdist
